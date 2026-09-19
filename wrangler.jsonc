@@ -5,6 +5,10 @@
   "compatibility_flags": ["nodejs_compat"],
   "main": "worker/index.ts",
 
+  "build": {
+    "command": "npm run build:unsafe"
+  },
+
   "assets": {
     "directory": "./dist",
     "binding": "ASSETS",
