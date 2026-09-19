@@ -1,0 +1,46 @@
+---
+interface Stat {
+  label: string;
+  value: string;
+}
+interface Props {
+  stats: Stat[];
+}
+const { stats } = Astro.props;
+---
+
+<ul class="stat-row">
+  {stats.map((stat) => (
+    <li>
+      <span class="value">{stat.value}</span>
+      <span class="label">{stat.label}</span>
+    </li>
+  ))}
+</ul>
+
+<style>
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: 1.5rem;
+    list-style: none;
+  }
+  .stat-row li {
+    border-top: 1px solid color-mix(in srgb, var(--color-up-ink) 14%, transparent);
+    padding-top: 1rem;
+  }
+  .value {
+    display: block;
+    font-family: var(--font-display);
+    font-size: var(--text-display-sm);
+    font-weight: 700;
+    color: var(--color-up-ink);
+  }
+  .label {
+    display: block;
+    margin-top: 0.35rem;
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    color: color-mix(in srgb, var(--color-up-ink) 60%, transparent);
+  }
+</style>

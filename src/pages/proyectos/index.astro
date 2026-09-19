@@ -1,0 +1,45 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ProjectGallery from '@/components/ProjectGallery.astro';
+import CTASection from '@/components/CTASection.astro';
+import { projects } from '@/data/projects';
+---
+
+<BaseLayout
+  title="Proyectos"
+  description="Vitrina de proyectos desarrollados por los equipos de Nexus Labs: Computer Science, Play, Mechanics e IISE."
+>
+  <section class="container-editorial header">
+    <p class="kicker">Nexus Labs · Proyectos</p>
+    <h1>Lo que construyen los equipos</h1>
+    <p class="lead">
+      {projects.length} proyectos documentados, de prototipos de robótica a
+      consultoría de procesos. Filtra por equipo para ver el trabajo completo
+      de cada disciplina.
+    </p>
+  </section>
+
+  <section class="container-editorial section">
+    <ProjectGallery projects={projects} />
+  </section>
+
+  <CTASection />
+</BaseLayout>
+
+<style>
+  .header {
+    padding-block: clamp(5rem, 7vw, 7rem) clamp(2rem, 3vw, 3rem);
+    max-width: 46rem;
+  }
+  h1 {
+    margin-top: 0.75rem;
+    font-size: var(--text-display-lg);
+  }
+  .lead {
+    margin-top: 1.5rem;
+    color: color-mix(in srgb, var(--color-up-ink) 75%, transparent);
+  }
+  .section {
+    padding-block: clamp(1rem, 2vw, 2rem) var(--spacing-section-y);
+  }
+</style>

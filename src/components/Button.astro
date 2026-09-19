@@ -1,0 +1,73 @@
+---
+interface Props {
+  href: string;
+  variant?: 'primary' | 'secondary' | 'ghost';
+  external?: boolean;
+}
+const { href, variant = 'primary', external = false } = Astro.props;
+---
+
+<a
+  href={href}
+  class:list={['btn', `btn--${variant}`]}
+  target={external ? '_blank' : undefined}
+  rel={external ? 'noopener noreferrer' : undefined}
+>
+  <span><slot /></span>
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M3.5 8h9M8.5 3.5 13 8l-4.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+  </svg>
+</a>
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.85rem 1.5rem;
+    border-radius: 999px;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: transform var(--duration-fast) var(--ease-editorial),
+      background var(--duration-fast) ease, color var(--duration-fast) ease,
+      border-color var(--duration-fast) ease;
+  }
+  .btn svg {
+    transition: transform var(--duration-fast) var(--ease-editorial);
+  }
+  .btn:hover svg {
+    transform: translateX(3px);
+  }
+  .btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .btn--primary {
+    background: var(--color-up-ink);
+    color: var(--color-up-paper);
+  }
+  .btn--primary:hover {
+    background: var(--color-up-garnet);
+  }
+
+  .btn--secondary {
+    background: var(--color-up-gold);
+    color: var(--color-up-ink);
+  }
+  .btn--secondary:hover {
+    background: var(--color-up-gold-metallic);
+  }
+
+  .btn--ghost {
+    background: transparent;
+    color: var(--color-up-ink);
+    border-color: color-mix(in srgb, var(--color-up-ink) 25%, transparent);
+  }
+  .btn--ghost:hover {
+    border-color: var(--color-up-ink);
+    background: color-mix(in srgb, var(--color-up-ink) 6%, transparent);
+  }
+</style>

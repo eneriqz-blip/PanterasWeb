@@ -1,0 +1,145 @@
+---
+import type { Project } from '@/data/projects';
+import { getTeam } from '@/data/teams';
+
+interface Props {
+  project: Project;
+}
+const { project } = Astro.props;
+const team = getTeam(project.team)!;
+---
+
+<article class:list={['project-card', `project-card--${team.color}`]} data-team={project.team}>
+  <div class="visual" aria-hidden="true">
+    <span class="visual__glyph">{team.shortName.slice(0, 2).toUpperCase()}</span>
+  </div>
+  <div class="content">
+    <div class="meta">
+      <span class="team">{team.shortName}</span>
+      <span class="status" data-status={project.status}>{project.status}</span>
+    </div>
+    <h3>{project.title}</h3>
+    <p>{project.summary}</p>
+    <ul class="tags">
+      {project.tags.map((tag) => <li>{tag}</li>)}
+    </ul>
+    <div class="footer">
+      <span class="metric"><strong>{project.metric.value}</strong> {project.metric.label}</span>
+      <span class="year">{project.year}</span>
+    </div>
+  </div>
+</article>
+
+<style>
+  .project-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 1.1rem;
+    background: var(--color-up-paper);
+    border: 1px solid color-mix(in srgb, var(--color-up-ink) 10%, transparent);
+    overflow: hidden;
+    transition: transform var(--duration-base) var(--ease-editorial),
+      box-shadow var(--duration-base) var(--ease-editorial);
+  }
+  .project-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 24px 48px -28px rgb(0 0 0 / 0.28);
+  }
+
+  .project-card--blue { --accent: var(--color-up-blue); }
+  .project-card--garnet { --accent: var(--color-up-garnet); }
+  .project-card--green { --accent: var(--color-up-green); }
+  .project-card--gold { --accent: var(--color-up-gold); }
+
+  .visual {
+    height: 8.5rem;
+    display: grid;
+    place-items: center;
+    background:
+      linear-gradient(120deg, color-mix(in srgb, var(--accent) 85%, transparent) 0%, color-mix(in srgb, var(--accent) 55%, black 10%) 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .visual::before {
+    content: '';
+    position: absolute;
+    inset: -30% -10%;
+    background: linear-gradient(100deg, transparent 40%, rgb(255 255 255 / 0.18) 48%, transparent 56%);
+  }
+  .visual__glyph {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 2.75rem;
+    color: color-mix(in srgb, white 92%, transparent);
+    letter-spacing: -0.02em;
+  }
+
+  .content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    flex: 1;
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .team {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--accent);
+  }
+  .status {
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-up-ink) 8%, transparent);
+    color: color-mix(in srgb, var(--color-up-ink) 70%, transparent);
+  }
+
+  h3 {
+    font-size: 1.2rem;
+    font-family: var(--font-display);
+  }
+
+  .content p {
+    font-size: 0.9rem;
+    color: color-mix(in srgb, var(--color-up-ink) 70%, transparent);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+  }
+  .tags li {
+    font-size: 0.72rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--color-up-ink) 16%, transparent);
+    color: color-mix(in srgb, var(--color-up-ink) 65%, transparent);
+  }
+
+  .footer {
+    margin-top: auto;
+    padding-top: 0.85rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-up-ink) 10%, transparent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 0.82rem;
+    color: color-mix(in srgb, var(--color-up-ink) 60%, transparent);
+  }
+  .metric strong {
+    color: var(--color-up-ink);
+    font-family: var(--font-display);
+  }
+</style>

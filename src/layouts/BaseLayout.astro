@@ -1,0 +1,66 @@
+---
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import '@/styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+  /** Ruta relativa a /public para la imagen social (1200x630, ver public/social/README.md). */
+  ogImage?: string;
+}
+
+const { title, description, ogImage } = Astro.props;
+const pageTitle = title === 'Nexus Labs' ? title : `${title} · Nexus Labs`;
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+---
+
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="canonical" href={canonicalURL} />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#002d72" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Nexus Labs · Universidad Panamericana" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    {ogImage && <meta property="og:image" content={new URL(ogImage, Astro.site)} />}
+    <meta property="og:url" content={canonicalURL} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={description} />
+  </head>
+  <body>
+    <a href="#contenido" class="skip-link">Saltar al contenido</a>
+    <Header />
+    <main id="contenido">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<style>
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    background: var(--color-up-ink);
+    color: var(--color-up-paper);
+    padding: 0.75rem 1.25rem;
+    border-radius: 0 0 0.5rem 0;
+  }
+  .skip-link:focus {
+    left: 0;
+  }
+</style>

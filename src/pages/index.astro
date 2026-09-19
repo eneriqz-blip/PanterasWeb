@@ -1,0 +1,201 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Hero from '@/components/Hero.astro';
+import TeamCard from '@/components/TeamCard.astro';
+import ProjectCard from '@/components/ProjectCard.astro';
+import StatRow from '@/components/StatRow.astro';
+import Button from '@/components/Button.astro';
+import CTASection from '@/components/CTASection.astro';
+import { teams } from '@/data/teams';
+import { projects } from '@/data/projects';
+
+const pillars = [
+  {
+    title: 'Aprender construyendo',
+    detail:
+      'Cada integrante trabaja sobre un proyecto real desde su primera semana: el aprendizaje ocurre resolviendo, no sólo estudiando.',
+  },
+  {
+    title: 'Mentoría entre pares',
+    detail:
+      'Quienes llevan más tiempo forman a quienes empiezan. El conocimiento se queda en el equipo, generación tras generación.',
+  },
+  {
+    title: 'Estándares de la industria',
+    detail:
+      'Revisión de trabajo, documentación y procesos como los de una organización real, no como los de un club informal.',
+  },
+  {
+    title: 'Comunidad Panamericana',
+    detail:
+      'Cuatro equipos, un mismo propósito: formar el potencial de cada estudiante para convertirlo en la mejor versión de sí mismo.',
+  },
+];
+
+const aggregateStats = [
+  { label: 'Integrantes activos', value: '148' },
+  { label: 'Proyectos documentados', value: `${projects.length}` },
+  { label: 'Equipos', value: '4' },
+  { label: 'Años de trayectoria', value: '7' },
+];
+
+const featured = projects.slice(0, 3);
+---
+
+<BaseLayout
+  title="Nexus Labs"
+  description="Nexus Labs es la plataforma de clubes estudiantiles de Ingeniería y Tecnología de la Universidad Panamericana: Computer Science, Play, Mechanics e IISE."
+>
+  <Hero />
+
+  <section class="container-editorial section about">
+    <div class="two-col">
+      <div>
+        <p class="kicker">Quiénes somos</p>
+        <h2>
+          Un laboratorio de talento, no un club más de la lista.
+        </h2>
+      </div>
+      <div class="prose">
+        <p>
+          Nexus Labs nació de una idea simple: la mejor forma de formar
+          ingenieros y creadores de tecnología es dándoles proyectos reales,
+          no sólo materias. Es la plataforma que reúne a los clubes
+          estudiantiles de ingeniería y tecnología de la Universidad
+          Panamericana bajo una misma manera de trabajar.
+        </p>
+        <p>
+          Creemos, como Institución, que el mundo sería mejor si todos
+          reconociéramos nuestro potencial para alcanzar la mejor versión de
+          nosotros mismos. Nexus Labs traduce ese propósito en algo concreto:
+          espacios donde un estudiante de primer semestre y uno de último año
+          construyen, se equivocan y aprenden juntos, con la disciplina de un
+          equipo profesional.
+        </p>
+      </div>
+    </div>
+
+    <div class="pillars">
+      {pillars.map((pillar) => (
+        <article class="pillar">
+          <h3>{pillar.title}</h3>
+          <p>{pillar.detail}</p>
+        </article>
+      ))}
+    </div>
+
+    <div class="stats-wrap">
+      <StatRow stats={aggregateStats} />
+    </div>
+  </section>
+
+  <section class="container-editorial section">
+    <div class="section-head">
+      <div>
+        <p class="kicker">Equipos</p>
+        <h2>Elige tu disciplina</h2>
+      </div>
+      <Button href="/equipos" variant="ghost">Ver los 4 equipos</Button>
+    </div>
+    <div class="teams-grid">
+      {teams.map((team, i) => (
+        <TeamCard team={team} index={i + 1} />
+      ))}
+    </div>
+  </section>
+
+  <section class="container-editorial section">
+    <div class="section-head">
+      <div>
+        <p class="kicker">Portafolio</p>
+        <h2>Proyectos recientes</h2>
+      </div>
+      <Button href="/proyectos" variant="ghost">Ver todos los proyectos</Button>
+    </div>
+    <div class="projects-grid">
+      {featured.map((project) => (
+        <ProjectCard project={project} />
+      ))}
+    </div>
+  </section>
+
+  <CTASection />
+</BaseLayout>
+
+<style>
+  .section {
+    padding-block: var(--spacing-section-y);
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1.3fr;
+    gap: 3rem;
+  }
+  .two-col h2 {
+    margin-top: 0.75rem;
+    font-size: var(--text-display-md);
+  }
+  .prose p {
+    margin-top: 1rem;
+    color: color-mix(in srgb, var(--color-up-ink) 78%, transparent);
+    max-width: 60ch;
+  }
+  .prose p:first-child { margin-top: 0; }
+
+  .pillars {
+    margin-top: 4rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    gap: 1.25rem;
+  }
+  .pillar {
+    padding: 1.75rem;
+    border-radius: 1rem;
+    background: color-mix(in srgb, var(--color-up-gold) 10%, var(--color-up-paper));
+    border: 1px solid color-mix(in srgb, var(--color-up-gold) 30%, transparent);
+  }
+  .pillar h3 {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+  }
+  .pillar p {
+    margin-top: 0.6rem;
+    font-size: 0.9rem;
+    color: color-mix(in srgb, var(--color-up-ink) 68%, transparent);
+  }
+
+  .stats-wrap {
+    margin-top: 4rem;
+  }
+
+  .section-head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+  }
+  .section-head h2 {
+    margin-top: 0.5rem;
+    font-size: var(--text-display-md);
+  }
+
+  .teams-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 860px) {
+    .two-col { grid-template-columns: 1fr; }
+    .teams-grid { grid-template-columns: 1fr; }
+  }
+</style>

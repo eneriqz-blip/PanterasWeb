@@ -1,0 +1,119 @@
+---
+import NexusMark from '@/components/NexusMark.astro';
+import { teams } from '@/data/teams';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="container-editorial grid">
+    <div class="col-brand">
+      <NexusMark variant="light" size="md" />
+      <p>
+        Nexus Labs es la plataforma de clubes estudiantiles de Ingeniería y
+        Tecnología de la Universidad Panamericana: cuatro equipos, un mismo
+        propósito de aprender construyendo.
+      </p>
+    </div>
+
+    <nav aria-label="Equipos">
+      <span class="kicker">Equipos</span>
+      <ul>
+        {teams.map((team) => (
+          <li><a href={`/equipos/${team.slug}`}>{team.shortName}</a></li>
+        ))}
+      </ul>
+    </nav>
+
+    <nav aria-label="Sitio">
+      <span class="kicker">Sitio</span>
+      <ul>
+        <li><a href="/">Inicio</a></li>
+        <li><a href="/equipos">Equipos</a></li>
+        <li><a href="/proyectos">Proyectos</a></li>
+        <li><a href="/#unete">Únete</a></li>
+      </ul>
+    </nav>
+
+    <div class="col-contact">
+      <span class="kicker">Contacto</span>
+      <ul>
+        <li><a href="mailto:nexuslabs@up.edu.mx">nexuslabs@up.edu.mx</a></li>
+        <li>Campus Ciudad de México</li>
+        <li>Universidad Panamericana</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="container-editorial legal">
+    <p>© {year} Nexus Labs · Universidad Panamericana. Todos los derechos reservados.</p>
+    <p>Sitio construido siguiendo el Manual de Marca institucional (2020).</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--color-up-ink);
+    color: color-mix(in srgb, var(--color-up-paper) 82%, transparent);
+    padding-block: clamp(3rem, 3vw, 5rem) 2rem;
+    margin-top: var(--spacing-section-y);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr 1fr;
+    gap: 2.5rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid color-mix(in srgb, var(--color-up-paper) 14%, transparent);
+  }
+
+  .col-brand p {
+    margin-top: 1.1rem;
+    max-width: 30ch;
+    font-size: 0.92rem;
+    color: color-mix(in srgb, var(--color-up-paper) 65%, transparent);
+  }
+
+  .kicker {
+    color: var(--color-up-gold);
+  }
+
+  nav ul, .col-contact ul {
+    list-style: none;
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  nav a, .col-contact a {
+    color: inherit;
+    text-decoration: none;
+    font-size: 0.92rem;
+  }
+  nav a:hover, .col-contact a:hover {
+    color: var(--color-up-gold);
+  }
+  .col-contact li {
+    font-size: 0.92rem;
+    color: color-mix(in srgb, var(--color-up-paper) 65%, transparent);
+  }
+
+  .legal {
+    padding-top: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: 0.8rem;
+    color: color-mix(in srgb, var(--color-up-paper) 50%, transparent);
+  }
+
+  @media (max-width: 860px) {
+    .grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .col-brand {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

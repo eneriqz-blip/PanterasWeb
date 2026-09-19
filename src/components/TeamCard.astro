@@ -1,0 +1,124 @@
+---
+import type { Team } from '@/data/teams';
+
+interface Props {
+  team: Team;
+  index: number;
+}
+const { team, index } = Astro.props;
+---
+
+<a href={`/equipos/${team.slug}`} class:list={['team-card', `team-card--${team.color}`]}>
+  <span class="index">{String(index).padStart(2, '0')}</span>
+  <div class="body">
+    <h3>{team.shortName}</h3>
+    <p class="tagline">{team.tagline}</p>
+    <p class="summary">{team.summary}</p>
+  </div>
+  <div class="footer">
+    <span class="stat">{team.stats[0].value} {team.stats[0].label}</span>
+    <span class="arrow" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M4 10h12M12 5l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </span>
+  </div>
+  <span class="edge" aria-hidden="true"></span>
+</a>
+
+<style>
+  .team-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 22rem;
+    padding: 2rem;
+    border-radius: 1.25rem;
+    background: var(--color-up-paper);
+    border: 1px solid color-mix(in srgb, var(--color-up-ink) 10%, transparent);
+    text-decoration: none;
+    color: var(--color-up-ink);
+    overflow: hidden;
+    isolation: isolate;
+    transition: transform var(--duration-base) var(--ease-editorial),
+      box-shadow var(--duration-base) var(--ease-editorial);
+  }
+  .team-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 30px 60px -30px rgb(0 0 0 / 0.3);
+  }
+
+  .edge {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(160deg, var(--accent) 0%, transparent 55%);
+    opacity: 0.16;
+    transition: opacity var(--duration-base) ease;
+  }
+  .team-card:hover .edge {
+    opacity: 0.28;
+  }
+
+  .team-card--blue { --accent: var(--color-up-blue); }
+  .team-card--garnet { --accent: var(--color-up-garnet); }
+  .team-card--green { --accent: var(--color-up-green); }
+  .team-card--gold { --accent: var(--color-up-gold); }
+
+  .index {
+    font-family: var(--font-display);
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  h3 {
+    margin-top: 1.25rem;
+    font-size: var(--text-display-md);
+  }
+
+  .tagline {
+    margin-top: 0.5rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    color: var(--accent);
+  }
+
+  .summary {
+    margin-top: 0.9rem;
+    font-size: 0.95rem;
+    color: color-mix(in srgb, var(--color-up-ink) 72%, transparent);
+    max-width: 40ch;
+  }
+
+  .footer {
+    margin-top: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1.25rem;
+    border-top: 1px solid color-mix(in srgb, var(--color-up-ink) 12%, transparent);
+  }
+  .stat {
+    font-family: var(--font-body);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: color-mix(in srgb, var(--color-up-ink) 60%, transparent);
+  }
+  .arrow {
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--color-up-paper);
+    transition: transform var(--duration-fast) var(--ease-editorial);
+  }
+  .team-card:hover .arrow {
+    transform: translateX(3px) scale(1.05);
+  }
+</style>

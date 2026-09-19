@@ -1,0 +1,59 @@
+---
+import Button from '@/components/Button.astro';
+---
+
+<section id="unete" class="cta-section">
+  <div class="container-editorial inner">
+    <p class="kicker">Únete a Nexus Labs</p>
+    <h2>
+      Elige un equipo.<br />Empieza a construir esta semana.
+    </h2>
+    <p class="lead">
+      No necesitas experiencia previa, sólo disposición para aprender en
+      equipo. Escríbenos y te conectamos con el equipo que mejor se ajuste a
+      lo que quieres construir.
+    </p>
+    <div class="actions">
+      <Button href="mailto:nexuslabs@up.edu.mx?subject=Quiero%20unirme%20a%20Nexus%20Labs" variant="secondary">
+        Escríbenos por correo
+      </Button>
+      <Button href="/equipos" variant="ghost">Comparar los 4 equipos</Button>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-section {
+    background: var(--color-up-ink);
+    color: var(--color-up-paper);
+    padding-block: var(--spacing-section-y);
+    border-radius: 1.5rem;
+    margin-inline: clamp(1rem, 2vw, 2rem);
+  }
+  .inner {
+    max-width: 42rem;
+  }
+  h2 {
+    margin-top: 1rem;
+    font-size: var(--text-display-lg);
+  }
+  .lead {
+    margin-top: 1.5rem;
+    color: color-mix(in srgb, var(--color-up-paper) 75%, transparent);
+    max-width: 46ch;
+  }
+  .actions {
+    margin-top: 2.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .cta-section :global(.btn--ghost) {
+    color: var(--color-up-paper);
+    border-color: color-mix(in srgb, var(--color-up-paper) 35%, transparent);
+  }
+  .cta-section :global(.btn--ghost:hover) {
+    border-color: var(--color-up-paper);
+    background: color-mix(in srgb, var(--color-up-paper) 10%, transparent);
+  }
+</style>

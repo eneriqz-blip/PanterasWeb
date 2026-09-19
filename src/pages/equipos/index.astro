@@ -1,0 +1,56 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import TeamCard from '@/components/TeamCard.astro';
+import CTASection from '@/components/CTASection.astro';
+import { teams } from '@/data/teams';
+---
+
+<BaseLayout
+  title="Equipos"
+  description="Los cuatro equipos de Nexus Labs: Computer Science, Play, Mechanics e IISE."
+>
+  <section class="container-editorial header">
+    <p class="kicker">Nexus Labs · Equipos</p>
+    <h1>Cuatro disciplinas, un mismo laboratorio</h1>
+    <p class="lead">
+      Cada equipo de Nexus Labs opera como un estudio independiente, con su
+      propia cadencia, herramientas y proyectos, pero comparte la misma
+      manera de trabajar: retos reales, mentoría entre pares y estándares de
+      la industria desde el primer semestre.
+    </p>
+  </section>
+
+  <section class="container-editorial grid">
+    {teams.map((team, i) => (
+      <TeamCard team={team} index={i + 1} />
+    ))}
+  </section>
+
+  <CTASection />
+</BaseLayout>
+
+<style>
+  .header {
+    padding-block: clamp(5rem, 7vw, 7rem) clamp(2rem, 3vw, 3rem);
+    max-width: 46rem;
+  }
+  h1 {
+    margin-top: 0.75rem;
+    font-size: var(--text-display-lg);
+  }
+  .lead {
+    margin-top: 1.5rem;
+    color: color-mix(in srgb, var(--color-up-ink) 75%, transparent);
+  }
+
+  .grid {
+    padding-block: clamp(1rem, 2vw, 2rem) var(--spacing-section-y);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 780px) {
+    .grid { grid-template-columns: 1fr; }
+  }
+</style>

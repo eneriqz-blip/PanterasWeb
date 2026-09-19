@@ -1,0 +1,39 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "nexus-labs-up",
+  "compatibility_date": "2025-09-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "worker/index.ts",
+
+  // Sitio estático (generado por `astro build` en /dist) servido desde
+  // Cloudflare Workers Static Assets. El worker en worker/index.ts sólo
+  // añade cabeceras de seguridad/caché en el edge; no hay cómputo pesado.
+  "assets": {
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "html_handling": "auto-trailing-slash"
+  },
+
+  "observability": {
+    "enabled": true
+  },
+
+  // Variables de entorno públicas (no secretas). Los secretos reales
+  // (API keys, tokens de formularios, etc.) se gestionan con:
+  //   wrangler secret put NOMBRE_SECRETO
+  "vars": {
+    "SITE_URL": "https://nexuslabs.up.edu.mx",
+    "SITE_ENV": "production"
+  },
+
+  "env": {
+    "staging": {
+      "name": "nexus-labs-up-staging",
+      "vars": {
+        "SITE_URL": "https://staging.nexuslabs.up.edu.mx",
+        "SITE_ENV": "staging"
+      }
+    }
+  }
+}

@@ -1,0 +1,131 @@
+---
+import ProjectCard from '@/components/ProjectCard.astro';
+import { teams } from '@/data/teams';
+import { projects as allProjects, type Project } from '@/data/projects';
+
+interface Props {
+  projects?: Project[];
+  /** Muestra la barra de filtros por equipo (por defecto: sí). */
+  filterable?: boolean;
+}
+const { projects = allProjects, filterable = true } = Astro.props;
+---
+
+<div class="gallery" data-gallery>
+  {filterable && (
+    <div class="filters" role="group" aria-label="Filtrar proyectos por equipo">
+      <button type="button" class="filter is-active" data-filter="all">
+        Todos
+        <span class="count">{projects.length}</span>
+      </button>
+      {teams.map((team) => {
+        const count = projects.filter((p) => p.team === team.id).length;
+        return (
+          <button type="button" class:list={['filter', `filter--${team.color}`]} data-filter={team.id}>
+            {team.shortName}
+            <span class="count">{count}</span>
+          </button>
+        );
+      })}
+    </div>
+  )}
+
+  <p class="empty" data-empty hidden>No hay proyectos para este filtro todavía.</p>
+
+  <div class="grid" data-grid>
+    {projects.map((project) => (
+      <div data-card data-card-team={project.team}>
+        <ProjectCard project={project} />
+      </div>
+    ))}
+  </div>
+</div>
+
+<!-- El script es seguro incluso cuando filterable=false: sin botones
+     [data-filter] en el DOM, cada forEach/click es un no-op inerte. -->
+<script>
+    const gallery = document.querySelector<HTMLElement>('[data-gallery]');
+    const buttons = gallery?.querySelectorAll<HTMLButtonElement>('[data-filter]');
+    const cards = gallery?.querySelectorAll<HTMLElement>('[data-card]');
+    const empty = gallery?.querySelector<HTMLElement>('[data-empty]');
+
+    function applyFilter(team: string) {
+      let visible = 0;
+      cards?.forEach((card) => {
+        const match = team === 'all' || card.dataset.cardTeam === team;
+        card.style.display = match ? '' : 'none';
+        if (match) visible += 1;
+      });
+      if (empty) empty.hidden = visible !== 0;
+    }
+
+    buttons?.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        buttons.forEach((b) => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        applyFilter(btn.dataset.filter ?? 'all');
+        history.replaceState(null, '', btn.dataset.filter === 'all' ? location.pathname : `#${btn.dataset.filter}`);
+      });
+    });
+
+    const initial = location.hash.replace('#', '');
+    if (initial) {
+      const match = Array.from(buttons ?? []).find((b) => b.dataset.filter === initial);
+      match?.click();
+    }
+</script>
+
+<style>
+  .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 2.5rem;
+  }
+  .filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-body);
+    font-size: 0.88rem;
+    font-weight: 600;
+    padding: 0.55rem 1.1rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--color-up-ink) 18%, transparent);
+    background: transparent;
+    color: var(--color-up-ink);
+    cursor: pointer;
+    transition: background var(--duration-fast) ease, color var(--duration-fast) ease, border-color var(--duration-fast) ease;
+  }
+  .filter .count {
+    font-size: 0.72rem;
+    padding: 0.05rem 0.45rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-up-ink) 10%, transparent);
+  }
+  .filter.is-active {
+    background: var(--color-up-ink);
+    color: var(--color-up-paper);
+    border-color: var(--color-up-ink);
+  }
+  .filter.is-active .count {
+    background: color-mix(in srgb, var(--color-up-paper) 20%, transparent);
+  }
+
+  .filter--blue.is-active { background: var(--color-up-blue); border-color: var(--color-up-blue); }
+  .filter--garnet.is-active { background: var(--color-up-garnet); border-color: var(--color-up-garnet); }
+  .filter--green.is-active { background: var(--color-up-green); border-color: var(--color-up-green); }
+  .filter--gold.is-active { background: var(--color-up-gold); border-color: var(--color-up-gold); color: var(--color-up-ink); }
+
+  .empty {
+    padding: 3rem 0;
+    text-align: center;
+    color: color-mix(in srgb, var(--color-up-ink) 55%, transparent);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+    gap: 1.5rem;
+  }
+</style>

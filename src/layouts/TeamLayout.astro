@@ -1,0 +1,203 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Button from '@/components/Button.astro';
+import StatRow from '@/components/StatRow.astro';
+import ProjectGallery from '@/components/ProjectGallery.astro';
+import CTASection from '@/components/CTASection.astro';
+import { getTeam, type TeamId } from '@/data/teams';
+import { getProjectsByTeam } from '@/data/projects';
+
+interface Props {
+  slug: TeamId;
+}
+const { slug } = Astro.props;
+const team = getTeam(slug);
+if (!team) throw new Error(`Equipo no encontrado: ${slug}`);
+const teamProjects = getProjectsByTeam(team.id);
+---
+
+<BaseLayout title={team.fullName} description={team.summary}>
+<div class="team-page" data-color={team.color}>
+  <section class:list={['team-hero', `team-hero--${team.color}`]}>
+    <div class="tahali" aria-hidden="true"></div>
+    <div class="container-editorial inner">
+      <a href="/equipos" class="back">← Todos los equipos</a>
+      <p class="kicker">Nexus Labs · Equipo</p>
+      <h1>{team.shortName}</h1>
+      <p class="tagline">{team.tagline}</p>
+      <p class="summary">{team.summary}</p>
+      <div class="actions">
+        <Button href="#proyectos" variant="secondary">Ver proyectos del equipo</Button>
+        <Button href="/#unete" variant="ghost">Quiero unirme</Button>
+      </div>
+    </div>
+  </section>
+
+  <section class="container-editorial section">
+    <div class="two-col">
+      <div class="prose">
+        <p class="kicker">Sobre el equipo</p>
+        {team.description.map((paragraph) => <p>{paragraph}</p>)}
+        <p class="cadence">
+          <strong>Sesiones:</strong> {team.cadence}
+        </p>
+        <p class="join-note">{team.joinNote}</p>
+      </div>
+      <aside class="stats-card">
+        <StatRow stats={team.stats} />
+      </aside>
+    </div>
+  </section>
+
+  <section class="container-editorial section">
+    <p class="kicker">En qué trabaja {team.shortName}</p>
+    <h2>Áreas de enfoque</h2>
+    <div class="focus-grid">
+      {team.focusAreas.map((area) => (
+        <article class="focus-card">
+          <h3>{area.title}</h3>
+          <p>{area.detail}</p>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section id="proyectos" class="container-editorial section">
+    <p class="kicker">Portafolio</p>
+    <h2>Proyectos de {team.shortName}</h2>
+    <div class="gallery-wrap">
+      <ProjectGallery projects={teamProjects} filterable={false} />
+    </div>
+  </section>
+
+  <CTASection />
+</div>
+</BaseLayout>
+
+<style>
+  .team-page[data-color='blue'] { --accent: var(--color-up-blue); }
+  .team-page[data-color='garnet'] { --accent: var(--color-up-garnet); }
+  .team-page[data-color='green'] { --accent: var(--color-up-green); }
+  .team-page[data-color='gold'] { --accent: var(--color-up-gold); }
+
+  .team-hero {
+    position: relative;
+    overflow: hidden;
+    padding-block: clamp(6rem, 8vw, 8rem) clamp(4rem, 6vw, 6rem);
+    background: color-mix(in srgb, var(--accent) 92%, black 8%);
+    color: var(--color-up-paper);
+  }
+  .team-hero .tahali {
+    position: absolute;
+    inset: -20% -10%;
+    background: linear-gradient(100deg, transparent 0 46%, rgb(255 255 255 / 0.12) 46% 52%, transparent 52% 100%);
+  }
+  .team-hero .inner {
+    position: relative;
+    z-index: 1;
+    max-width: 46rem;
+  }
+  .back {
+    display: inline-block;
+    margin-bottom: 2rem;
+    font-size: 0.85rem;
+    color: color-mix(in srgb, var(--color-up-paper) 80%, transparent);
+    text-decoration: none;
+  }
+  .back:hover { text-decoration: underline; }
+  .team-hero .kicker { color: color-mix(in srgb, var(--color-up-paper) 85%, transparent); }
+  .team-hero h1 {
+    margin-top: 0.75rem;
+    font-size: var(--text-display-xl);
+  }
+  .tagline {
+    margin-top: 0.75rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 1.15rem;
+    color: color-mix(in srgb, var(--color-up-paper) 92%, transparent);
+  }
+  .summary {
+    margin-top: 1.25rem;
+    max-width: 42ch;
+    color: color-mix(in srgb, var(--color-up-paper) 85%, transparent);
+  }
+  .actions {
+    margin-top: 2.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .team-hero :global(.btn--ghost) {
+    color: var(--color-up-paper);
+    border-color: color-mix(in srgb, var(--color-up-paper) 40%, transparent);
+  }
+
+  .section {
+    padding-block: var(--spacing-section-y);
+  }
+  .section h2 {
+    margin-top: 0.5rem;
+    font-size: var(--text-display-md);
+    max-width: 30ch;
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 3rem;
+    align-items: start;
+  }
+  .prose p {
+    margin-top: 1rem;
+    color: color-mix(in srgb, var(--color-up-ink) 78%, transparent);
+    max-width: 60ch;
+  }
+  .prose .cadence {
+    margin-top: 1.5rem;
+    color: var(--color-up-ink);
+  }
+  .join-note {
+    font-style: italic;
+  }
+  .stats-card {
+    padding: 1.75rem;
+    border-radius: 1.25rem;
+    background: color-mix(in srgb, var(--accent) 8%, var(--color-up-paper));
+    border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+    position: sticky;
+    top: 6rem;
+  }
+
+  .focus-grid {
+    margin-top: 2.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 1.25rem;
+  }
+  .focus-card {
+    padding: 1.75rem;
+    border-radius: 1rem;
+    background: var(--color-up-paper);
+    border: 1px solid color-mix(in srgb, var(--color-up-ink) 10%, transparent);
+    border-top: 3px solid var(--accent);
+  }
+  .focus-card h3 {
+    font-size: 1.05rem;
+    font-family: var(--font-display);
+  }
+  .focus-card p {
+    margin-top: 0.6rem;
+    font-size: 0.9rem;
+    color: color-mix(in srgb, var(--color-up-ink) 68%, transparent);
+  }
+
+  .gallery-wrap {
+    margin-top: 2.5rem;
+  }
+
+  @media (max-width: 860px) {
+    .two-col { grid-template-columns: 1fr; }
+    .stats-card { position: static; }
+  }
+</style>

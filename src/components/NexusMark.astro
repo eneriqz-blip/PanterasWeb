@@ -1,0 +1,93 @@
+---
+/**
+ * Lockup provisional de "Nexus Labs" con endoso a Universidad Panamericana,
+ * siguiendo el modelo de arquitectura de marca por endoso del Manual
+ * (pág. 14): la submarca (Nexus Labs) se presenta endosada por la Marca
+ * Institucional, sin alterar ni redibujar el escudo o el wordmark oficial.
+ *
+ * IMPORTANTE: este componente NO reproduce el escudo ni el wordmark real
+ * de Universidad Panamericana (son archivos vectoriales con licencia que
+ * no forman parte de este repositorio). En cuanto el equipo de Marca de
+ * la Universidad entregue el wordmark oficial en SVG, reemplaza el bloque
+ * <span class="mark"> por ese archivo respetando el área de protección
+ * definida en el Manual (pág. 41 y 69).
+ */
+interface Props {
+  variant?: 'default' | 'light';
+  size?: 'sm' | 'md' | 'lg';
+}
+const { variant = 'default', size = 'md' } = Astro.props;
+---
+
+<span class:list={['lockup', `lockup--${variant}`, `lockup--${size}`]}>
+  <span class="mark" aria-hidden="true">
+    <span class="mark__bar"></span>
+  </span>
+  <span class="wordmark">
+    <span class="wordmark__primary">Nexus Labs</span>
+    <span class="wordmark__endorse">Universidad Panamericana</span>
+  </span>
+</span>
+
+<style>
+  .lockup {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65em;
+    text-decoration: none;
+  }
+
+  .mark {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 2.1em;
+    height: 2.1em;
+    border-radius: 0.35em;
+    background: var(--color-up-ink);
+    overflow: hidden;
+    flex: none;
+  }
+  .lockup--light .mark {
+    background: var(--color-up-paper);
+  }
+  .mark__bar {
+    position: absolute;
+    inset: -40% -10%;
+    background: linear-gradient(
+      100deg,
+      transparent 0 44%,
+      var(--color-up-gold) 44% 58%,
+      transparent 58% 100%
+    );
+  }
+
+  .wordmark {
+    display: flex;
+    flex-direction: column;
+    line-height: 1;
+  }
+  .wordmark__primary {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.05em;
+    letter-spacing: -0.01em;
+    color: var(--color-up-ink);
+  }
+  .lockup--light .wordmark__primary {
+    color: var(--color-up-paper);
+  }
+  .wordmark__endorse {
+    margin-top: 0.28em;
+    font-family: var(--font-body);
+    font-size: 0.36em;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-up-gold-metallic);
+  }
+
+  .lockup--sm { font-size: 1.05rem; }
+  .lockup--md { font-size: 1.35rem; }
+  .lockup--lg { font-size: 2.1rem; }
+</style>

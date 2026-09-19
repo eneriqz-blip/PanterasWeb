@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nexuslabs.up.edu.mx/sitemap.xml
