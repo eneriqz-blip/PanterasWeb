@@ -12,7 +12,6 @@ export interface Project {
 }
 
 export const projects: Project[] = [
-  // — Computer Science —
   {
     slug: 'campusmap-navegacion-interior',
     title: 'CampusMap: navegación interior del campus',
@@ -47,7 +46,6 @@ export const projects: Project[] = [
     metric: { label: 'Despliegues automatizados', value: '300+' },
   },
 
-  // — Play —
   {
     slug: 'roble-and-thorn',
     title: 'Roble & Thorn',
@@ -82,7 +80,6 @@ export const projects: Project[] = [
     metric: { label: 'Piezas digitalizadas', value: '18' },
   },
 
-  // — Mechanics —
   {
     slug: 'rover-autonomo-v3',
     title: 'Rover autónomo v3',
@@ -117,7 +114,6 @@ export const projects: Project[] = [
     metric: { label: 'Precisión de clasificación', value: '92%' },
   },
 
-  // — IISE —
   {
     slug: 'lean-cafeteria-central',
     title: 'Rediseño de flujo en cafetería central',

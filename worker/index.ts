@@ -1,14 +1,4 @@
 /// <reference types="@cloudflare/workers-types" />
-/**
- * Nexus Labs — Universidad Panamericana
- * Worker de borde (edge) mínimo.
- *
- * El sitio es 100% estático (Astro -> /dist) y se sirve mediante
- * Workers Static Assets (binding `ASSETS`, ver wrangler.jsonc).
- * Este worker NO renderiza nada: sólo intercepta la respuesta para
- * añadir cabeceras de seguridad y política de caché por tipo de
- * archivo, manteniendo el runtime prácticamente en 0ms de CPU.
- */
 
 export interface Env {
   ASSETS: Fetcher;
@@ -26,8 +16,6 @@ const SECURITY_HEADERS: Record<string, string> = {
     "font-src 'self'; script-src 'self'; base-uri 'self'; frame-ancestors 'none'",
 };
 
-// Cache-Control por extensión: assets con hash de Astro -> caché larga e inmutable,
-// HTML -> siempre revalidar en el edge (contenido puede cambiar sin rebuild de caché).
 function cacheControlFor(pathname: string): string {
   if (/\.(?:js|css|woff2?|ttf|otf)$/.test(pathname)) {
     return 'public, max-age=31536000, immutable';
@@ -45,7 +33,6 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
 
-    // Health-check ligero para monitoreo (uptime robots, CF health checks).
     if (url.pathname === '/api/health') {
       return Response.json({ ok: true, env: env.SITE_ENV }, { status: 200 });
     }

@@ -5,7 +5,6 @@ import { projects as allProjects, type Project } from '@/data/projects';
 
 interface Props {
   projects?: Project[];
-  /** Muestra la barra de filtros por equipo (por defecto: sí). */
   filterable?: boolean;
 }
 const { projects = allProjects, filterable = true } = Astro.props;
@@ -41,8 +40,6 @@ const { projects = allProjects, filterable = true } = Astro.props;
   </div>
 </div>
 
-<!-- El script es seguro incluso cuando filterable=false: sin botones
-     [data-filter] en el DOM, cada forEach/click es un no-op inerte. -->
 <script>
     const gallery = document.querySelector<HTMLElement>('[data-gallery]');
     const buttons = gallery?.querySelectorAll<HTMLButtonElement>('[data-filter]');

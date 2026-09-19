@@ -1,17 +1,3 @@
-/**
- * Los 4 equipos de Nexus Labs.
- *
- * Asignación de color: para no introducir tonos ajenos al Manual de Marca,
- * cada equipo hereda uno de los 4 colores cromáticos ya aprobados
- * institucionalmente (dorado, azul, vino, verde), eligiendo el que mejor
- * dialoga con el significado que el propio manual les atribuye
- * (pág. 32, "Inspiración de los colores"):
- *   - Azul  → Prudencia e inteligencia   → Computer Science
- *   - Vino  → Fortaleza, audacia, honor  → Mechanics
- *   - Verde → Constancia y esperanza     → IISE
- *   - Dorado→ Excelencia y grandeza      → Play
- */
-
 export type TeamId = 'computer-science' | 'play' | 'mechanics' | 'iise';
 
 export interface TeamStat {

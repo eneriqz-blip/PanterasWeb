@@ -1,22 +1,8 @@
 @import "tailwindcss";
 
-/* Fallbacks auto-hospedados (sin peticiones externas) mientras se instalan
-   las tipografías con licencia institucional. Ver sección "Tipografía" en
-   docs/BRAND.md para el reemplazo por Laurentian Std y Seravek. */
 @import "@fontsource-variable/fraunces/full.css";
 @import "@fontsource-variable/inter/wght.css";
 
-/* ============================================================
-   TIPOGRAFÍA INSTITUCIONAL — Universidad Panamericana
-   Primaria (encabezados/descriptivos): Laurentian Std
-   Secundaria (cuerpo de texto):        Seravek
-   Estos archivos son propiedad de la Institución y no se
-   redistribuyen en este repositorio. Al recibir la licencia,
-   coloca los .woff2 en /public/fonts/laurentian y /public/fonts/seravek
-   respetando los nombres de archivo referenciados abajo; @font-face
-   activará la tipografía real automáticamente y Fraunces/Inter
-   dejarán de usarse (quedan sólo como red de seguridad tipográfica).
-   ============================================================ */
 @font-face {
   font-family: "Laurentian Std";
   src:
@@ -64,49 +50,35 @@
   font-display: swap;
 }
 
-/* ============================================================
-   DESIGN TOKENS — derivados del Manual de Marca UP (2020)
-   Ver docs/BRAND.md para la referencia Pantone/CMYK/RGB completa.
-   ============================================================ */
 @theme {
-  /* — Paleta oficial — */
-  /* Dorado institucional: constante en Institucional | Alumni | Fundación */
-  --color-up-gold: #b9975b;         /* PANTONE 465 CP — tinta */
-  --color-up-gold-metallic: #ab8855; /* PANTONE METALLIC 10403 C */
-  --color-up-gold-shield: #c6aa76;   /* PANTONE 466 C — sólo escudo */
+  --color-up-gold: #b9975b;
+  --color-up-gold-metallic: #ab8855;
+  --color-up-gold-shield: #c6aa76;
 
-  /* Azul institucional: submarca Preparatoria / identidad histórica del escudo */
-  --color-up-blue: #002d72;          /* PANTONE 288 CP */
+  --color-up-blue: #002d72;
   --color-up-blue-light: #1e4f96;
 
-  /* Vino/rojo de acento: submarca Universidad (Licenciatura), "Fortaleza" */
-  --color-up-garnet: #8a1538;        /* PANTONE 1955 CP */
+  --color-up-garnet: #8a1538;
   --color-up-garnet-dark: #6b0f2a;
 
-  /* Verde: submarca Posgrados, "Esperanza" (uso puntual/futuro) */
-  --color-up-green: #00685e;         /* PANTONE 329 CP */
+  --color-up-green: #00685e;
 
-  /* Neutros */
   --color-up-ink: #111014;
   --color-up-charcoal: #26242b;
   --color-up-paper: #faf8f4;
   --color-up-sand: #f0ebe0;
   --color-up-mist: #d8d3c8;
 
-  /* — Tipografía — */
   --font-display: "Laurentian Std", "Fraunces Variable", "Fraunces", Georgia, serif;
   --font-body: "Seravek", "Inter Variable", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 
-  /* — Escala tipográfica editorial (fluida) — */
   --text-display-xl: clamp(2.75rem, 2rem + 3.2vw, 6rem);
   --text-display-lg: clamp(2.25rem, 1.7rem + 2.4vw, 4.25rem);
   --text-display-md: clamp(1.75rem, 1.4rem + 1.6vw, 2.75rem);
   --text-display-sm: clamp(1.375rem, 1.2rem + 0.8vw, 1.875rem);
 
-  /* — Espaciado de sección (ritmo editorial) — */
   --spacing-section-y: clamp(4rem, 3rem + 4vw, 8rem);
 
-  /* — Movimiento — */
   --ease-editorial: cubic-bezier(0.16, 1, 0.3, 1);
   --duration-fast: 180ms;
   --duration-base: 420ms;
@@ -169,7 +141,6 @@
 }
 
 @layer utilities {
-  /* Eyebrow / kicker tipográfico usado en todas las secciones */
   .kicker {
     font-family: var(--font-body);
     font-weight: 600;
@@ -178,9 +149,6 @@
     text-transform: uppercase;
   }
 
-  /* "Panamericanismo": Franco Cuartel (bloque de color) + Tahalí (diagonal),
-     los dos elementos del escudo que sostienen el sistema gráfico (pág. 208
-     del Manual de Marca). Se usa como fondo decorativo, nunca como logotipo. */
   .franco-cuartel {
     position: relative;
     overflow: hidden;
