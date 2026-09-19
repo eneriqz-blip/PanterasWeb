@@ -9,7 +9,7 @@ const { project } = Astro.props;
 const team = getTeam(project.team)!;
 ---
 
-<article class:list={['project-card', `project-card--${team.color}`]} data-team={project.team}>
+<article class="project-card" data-tone={team.color} data-team={project.team}>
   <div class="visual" aria-hidden="true">
     <span class="visual__glyph">{team.shortName.slice(0, 2).toUpperCase()}</span>
   </div>
@@ -46,11 +46,6 @@ const team = getTeam(project.team)!;
     box-shadow: 0 24px 48px -28px rgb(0 0 0 / 0.28);
   }
 
-  .project-card--blue { --accent: var(--color-up-blue); }
-  .project-card--garnet { --accent: var(--color-up-garnet); }
-  .project-card--green { --accent: var(--color-up-green); }
-  .project-card--gold { --accent: var(--color-up-gold); }
-
   .visual {
     height: 8.5rem;
     display: grid;
@@ -70,7 +65,7 @@ const team = getTeam(project.team)!;
     font-family: var(--font-display);
     font-weight: 700;
     font-size: 2.75rem;
-    color: color-mix(in srgb, white 92%, transparent);
+    color: var(--on-accent);
     letter-spacing: -0.02em;
   }
 
@@ -93,7 +88,7 @@ const team = getTeam(project.team)!;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--accent);
+    color: var(--accent-text);
   }
   .status {
     font-size: 0.72rem;

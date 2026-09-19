@@ -3,57 +3,11 @@
 @import "@fontsource-variable/fraunces/full.css";
 @import "@fontsource-variable/inter/wght.css";
 
-@font-face {
-  font-family: "Laurentian Std";
-  src:
-    local("Laurentian Std Regular"),
-    url("/fonts/laurentian/LaurentianStd-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Laurentian Std";
-  src:
-    local("Laurentian Std Semibold"),
-    url("/fonts/laurentian/LaurentianStd-Semibold.woff2") format("woff2");
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Laurentian Std";
-  src:
-    local("Laurentian Std Bold"),
-    url("/fonts/laurentian/LaurentianStd-Bold.woff2") format("woff2");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Seravek";
-  src:
-    local("Seravek"),
-    local("Seravek Light"),
-    url("/fonts/seravek/Seravek-Light.woff2") format("woff2");
-  font-weight: 300;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Seravek";
-  src:
-    local("Seravek Medium"),
-    url("/fonts/seravek/Seravek-Medium.woff2") format("woff2");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
 @theme {
   --color-up-gold: #b9975b;
   --color-up-gold-metallic: #ab8855;
   --color-up-gold-shield: #c6aa76;
+  --color-up-gold-ink: color-mix(in srgb, var(--color-up-gold-metallic) 55%, black);
 
   --color-up-blue: #002d72;
   --color-up-blue-light: #1e4f96;
@@ -141,6 +95,27 @@
 }
 
 @layer utilities {
+  [data-tone='blue'] {
+    --accent: var(--color-up-blue);
+    --accent-text: var(--color-up-blue);
+    --on-accent: var(--color-up-paper);
+  }
+  [data-tone='garnet'] {
+    --accent: var(--color-up-garnet);
+    --accent-text: var(--color-up-garnet);
+    --on-accent: var(--color-up-paper);
+  }
+  [data-tone='green'] {
+    --accent: var(--color-up-green);
+    --accent-text: var(--color-up-green);
+    --on-accent: var(--color-up-paper);
+  }
+  [data-tone='gold'] {
+    --accent: var(--color-up-gold);
+    --accent-text: var(--color-up-gold-ink);
+    --on-accent: var(--color-up-ink);
+  }
+
   .kicker {
     font-family: var(--font-body);
     font-weight: 600;

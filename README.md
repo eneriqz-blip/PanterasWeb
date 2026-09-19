@@ -17,7 +17,7 @@ Panteras/
 │  └─ BRAND.md                 # Sistema de diseño: tokens, tipografía, paleta, criterios
 ├─ public/
 │  ├─ favicon.svg
-│  ├─ robots.txt
+│  ├─ _headers                 # Cabeceras de seguridad (CSP, X-Frame-Options…) y caché de /_astro/*
 │  ├─ fonts/                   # Tipografías con licencia (Laurentian Std, Seravek) — ver README interno
 │  └─ social/                  # Imágenes Open Graph (pendiente de generar con fotografía real)
 ├─ src/
@@ -46,12 +46,15 @@ Panteras/
 │  │  │  ├─ play.astro
 │  │  │  ├─ mechanics.astro
 │  │  │  └─ iise.astro
-│  │  └─ proyectos/
-│  │     └─ index.astro        # Vitrina/showcase filtrable, vinculada a cada equipo
+│  │  ├─ proyectos/
+│  │  │  └─ index.astro        # Vitrina/showcase filtrable, vinculada a cada equipo
+│  │  ├─ 404.astro             # Página de error servida por Workers (not_found_handling)
+│  │  ├─ sitemap.xml.ts        # Generado en build con la URL definida en SITE_URL
+│  │  └─ robots.txt.ts
 │  └─ styles/
-│     └─ global.css            # Design tokens (@theme), @font-face, utilidades de marca
+│     └─ global.css            # Design tokens (@theme), colores por equipo (data-tone), utilidades de marca
 ├─ worker/
-│  └─ index.ts                 # Worker de borde: cabeceras de seguridad + caché (ver abajo)
+│  └─ index.ts                 # Worker mínimo: sólo /api/health; el resto lo sirve Static Assets
 ├─ astro.config.mjs
 ├─ tsconfig.json
 ├─ wrangler.jsonc               # Configuración de despliegue a Cloudflare Workers
@@ -80,9 +83,12 @@ npm run preview   # sirve /dist localmente con Astro
 El sitio se compila como salida estática (`output: 'static'` en
 `astro.config.mjs`) y se sirve mediante **Workers Static Assets**
 (`wrangler.jsonc`, campo `assets`). El worker en `worker/index.ts` no
-renderiza nada: sólo añade cabeceras de seguridad (`CSP`, `X-Frame-Options`,
-etc.) y política de caché por tipo de archivo antes de devolver la
-respuesta, manteniendo el runtime prácticamente en 0 ms de CPU.
+renderiza nada: las páginas y assets los sirve directamente Static Assets
+(sin invocar el Worker) y sólo `/api/health` pasa por él. Las cabeceras de
+seguridad y la caché inmutable de `/_astro/*` se definen en `public/_headers`.
+
+El comando `build` de `wrangler.jsonc` ejecuta `astro build` antes de cada
+`wrangler deploy`, así que Cloudflare no necesita un build command aparte.
 
 ```bash
 # una sola vez
@@ -124,4 +130,5 @@ correspondiente.
 2. **Wordmark/escudo oficial en SVG** — ver `docs/BRAND.md` §6.
 3. **Fotografía real** siguiendo el Territorio Visual del Manual — ver `docs/BRAND.md` §5.
 4. **Dominio y DNS**: apuntar `nexuslabs.up.edu.mx` (o el subdominio que defina TI) a la ruta del Worker vía un *Custom Domain* en el dashboard de Cloudflare.
-5. Ajustar `site` en `astro.config.mjs` y `SITE_URL` en `wrangler.jsonc` si el dominio final cambia.
+5. Definir la URL final: variable de entorno `SITE_URL` en el build (alimenta `site`, el canonical, `sitemap.xml` y `robots.txt`) y `SITE_URL` en `wrangler.jsonc`. El dominio y el correo de contacto actuales son de ejemplo.
+6. Reemplazar el contenido de ejemplo (integrantes, cifras y métricas de `src/data/*.ts`) por datos reales.

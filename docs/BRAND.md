@@ -48,6 +48,8 @@ comunidad asocia con el escudo histórico). El vino se reserva como color de
 "dorados/rojos de acento" del brief, y es defendible porque es un Pantone
 ya aprobado por la Institución (1955 CP), no un color inventado.
 
+**Dorado como texto.** `#B9975B` sobre blanco da ~2.6:1 de contraste (AA exige 4.5:1), así que nunca se usa como color de texto sobre fondos claros. Para texto se usa `--color-up-gold-ink` (dorado metálico con 45% de negro, ~7.9:1) y sobre fondos dorados el texto va en negro (`--on-accent`). Los colores de cada equipo se resuelven con `data-tone` en `global.css`: `--accent` (relleno), `--accent-text` (texto) y `--on-accent` (contenido sobre el relleno).
+
 **Asignación por equipo** (ver `src/data/teams.ts`): cada uno de los 4
 colores cromáticos aprobados se asigna a un equipo según el significado que
 el propio Manual le atribuye (pág. 32):

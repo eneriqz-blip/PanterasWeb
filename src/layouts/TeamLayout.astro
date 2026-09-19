@@ -17,8 +17,8 @@ const teamProjects = getProjectsByTeam(team.id);
 ---
 
 <BaseLayout title={team.fullName} description={team.summary}>
-<div class="team-page" data-color={team.color}>
-  <section class:list={['team-hero', `team-hero--${team.color}`]}>
+<div class="team-page" data-tone={team.color}>
+  <section class="team-hero">
     <div class="tahali" aria-hidden="true"></div>
     <div class="container-editorial inner">
       <a href="/equipos" class="back">← Todos los equipos</a>
@@ -75,22 +75,17 @@ const teamProjects = getProjectsByTeam(team.id);
 </BaseLayout>
 
 <style>
-  .team-page[data-color='blue'] { --accent: var(--color-up-blue); }
-  .team-page[data-color='garnet'] { --accent: var(--color-up-garnet); }
-  .team-page[data-color='green'] { --accent: var(--color-up-green); }
-  .team-page[data-color='gold'] { --accent: var(--color-up-gold); }
-
   .team-hero {
     position: relative;
     overflow: hidden;
     padding-block: clamp(6rem, 8vw, 8rem) clamp(4rem, 6vw, 6rem);
     background: color-mix(in srgb, var(--accent) 92%, black 8%);
-    color: var(--color-up-paper);
+    color: var(--on-accent);
   }
   .team-hero .tahali {
     position: absolute;
     inset: -20% -10%;
-    background: linear-gradient(100deg, transparent 0 46%, rgb(255 255 255 / 0.12) 46% 52%, transparent 52% 100%);
+    background: linear-gradient(100deg, transparent 0 46%, color-mix(in srgb, var(--on-accent) 14%, transparent) 46% 52%, transparent 52% 100%);
   }
   .team-hero .inner {
     position: relative;
@@ -101,11 +96,11 @@ const teamProjects = getProjectsByTeam(team.id);
     display: inline-block;
     margin-bottom: 2rem;
     font-size: 0.85rem;
-    color: color-mix(in srgb, var(--color-up-paper) 80%, transparent);
+    color: color-mix(in srgb, var(--on-accent) 80%, transparent);
     text-decoration: none;
   }
   .back:hover { text-decoration: underline; }
-  .team-hero .kicker { color: color-mix(in srgb, var(--color-up-paper) 85%, transparent); }
+  .team-hero .kicker { color: color-mix(in srgb, var(--on-accent) 85%, transparent); }
   .team-hero h1 {
     margin-top: 0.75rem;
     font-size: var(--text-display-xl);
@@ -115,12 +110,12 @@ const teamProjects = getProjectsByTeam(team.id);
     font-family: var(--font-body);
     font-weight: 600;
     font-size: 1.15rem;
-    color: color-mix(in srgb, var(--color-up-paper) 92%, transparent);
+    color: color-mix(in srgb, var(--on-accent) 92%, transparent);
   }
   .summary {
     margin-top: 1.25rem;
     max-width: 42ch;
-    color: color-mix(in srgb, var(--color-up-paper) 85%, transparent);
+    color: color-mix(in srgb, var(--on-accent) 85%, transparent);
   }
   .actions {
     margin-top: 2.25rem;
@@ -129,8 +124,16 @@ const teamProjects = getProjectsByTeam(team.id);
     gap: 1rem;
   }
   .team-hero :global(.btn--ghost) {
+    color: var(--on-accent);
+    border-color: color-mix(in srgb, var(--on-accent) 40%, transparent);
+  }
+
+  .team-page[data-tone='gold'] .team-hero :global(.btn--secondary) {
+    background: var(--color-up-ink);
     color: var(--color-up-paper);
-    border-color: color-mix(in srgb, var(--color-up-paper) 40%, transparent);
+  }
+  .team-page[data-tone='gold'] .team-hero :global(.btn--secondary:hover) {
+    background: var(--color-up-charcoal);
   }
 
   .section {

@@ -1,0 +1,46 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Button from '@/components/Button.astro';
+---
+
+<BaseLayout
+  title="Página no encontrada"
+  description="La página que buscas no existe o cambió de lugar."
+  noindex
+>
+  <section class="container-editorial not-found">
+    <p class="kicker">Error 404</p>
+    <h1>Esta página no existe.</h1>
+    <p class="lead">
+      Puede que el enlace haya cambiado o que la dirección tenga un error.
+      Desde aquí puedes volver a lo importante.
+    </p>
+    <div class="actions">
+      <Button href="/" variant="primary">Ir al inicio</Button>
+      <Button href="/equipos" variant="ghost">Ver los equipos</Button>
+      <Button href="/proyectos" variant="ghost">Ver proyectos</Button>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    padding-block: clamp(6rem, 10vw, 10rem);
+    max-width: 46rem;
+  }
+  h1 {
+    margin-top: 0.75rem;
+    font-size: var(--text-display-lg);
+  }
+  .lead {
+    margin-top: 1.5rem;
+    max-width: 46ch;
+    color: color-mix(in srgb, var(--color-up-ink) 75%, transparent);
+  }
+  .actions {
+    margin-top: 2.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+</style>
