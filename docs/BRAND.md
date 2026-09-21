@@ -90,6 +90,7 @@ queries* adicionales.
 
 - **Ritmo de sección:** `--spacing-section-y` = `clamp(4rem, 3rem + 4vw, 8rem)` — mismo respiro editorial en todas las páginas (inspirado en white-desert.com).
 - **Radios:** `0.5rem`–`1.5rem` según jerarquía (botones = pill, tarjetas = `1.1–1.25rem`).
+- **Interacción y transiciones:** solo se animan `transform` y `opacity`. Las páginas usan transiciones nativas entre documentos (`@view-transition`) con la portada del proyecto como elemento compartido, y el revelado por scroll, el texto del manifiesto y la barra de progreso usan `animation-timeline` (CSS, sin JS) con degradación a contenido estático. Todo respeta `prefers-reduced-motion`. El arte de las portadas es generativo y determinista por `slug` (`src/lib/art.ts`), así que no pesa nada y no simula fotografía.
 - **Movimiento:** una sola curva de easing en todo el sitio, `--ease-editorial: cubic-bezier(0.16, 1, 0.3, 1)`, con 3 duraciones (`fast/base/slow`). Se respeta `prefers-reduced-motion` globalmente.
 - **Sistema gráfico institucional** ("Panamericanismo", Manual pág. 206–211): el **Franco Cuartel** (bloque de color, contenedor fotográfico) y el **Tahalí** (banda diagonal) deben aparecer siempre juntos. Implementado como utilidades `.franco-cuartel` / `.tahali` en `global.css`, reutilizadas en `Hero.astro` y `TeamLayout.astro`.
 

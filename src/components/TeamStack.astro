@@ -1,0 +1,176 @@
+---
+import CoverArt from '@/components/CoverArt.astro';
+import Button from '@/components/Button.astro';
+import { teams } from '@/data/teams';
+import { getProjectsByTeam } from '@/data/projects';
+---
+
+<div class="stack">
+  {teams.map((team, i) => (
+    <article class="stack-card" data-tone={team.color} style={`--i:${i}`}>
+      <div class="copy">
+        <span class="num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+        <h3>{team.shortName}</h3>
+        <p class="tagline">{team.tagline}</p>
+        <p class="summary">{team.summary}</p>
+        <ul class="focus">
+          {team.focusAreas.slice(0, 3).map((area) => <li>{area.title}</li>)}
+        </ul>
+        <div class="actions">
+          <Button href={`/equipos/${team.slug}`} variant="primary">Conocer el equipo</Button>
+          <a class="more" href={`/proyectos?equipo=${team.slug}`}>
+            {getProjectsByTeam(team.id).length} proyectos →
+          </a>
+        </div>
+      </div>
+      <div class="art" data-glow>
+        <CoverArt team={team.id} seed={`stack-${team.id}`} />
+        <span class="stat">
+          <strong>{team.stats[0].value}</strong>
+          {team.stats[0].label}
+        </span>
+      </div>
+    </article>
+  ))}
+</div>
+
+<style>
+  .stack {
+    display: grid;
+    gap: clamp(1rem, 2vw, 1.75rem);
+    padding-bottom: 2rem;
+  }
+
+  .stack-card {
+    position: sticky;
+    top: calc(5.5rem + var(--i) * 1.1rem);
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: clamp(1.5rem, 3vw, 3.5rem);
+    align-items: center;
+    min-height: min(30rem, 74vh);
+    padding: clamp(1.5rem, 3vw, 3rem);
+    border-radius: 1.75rem;
+    background: color-mix(in srgb, var(--accent) 9%, var(--color-up-paper));
+    border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+    box-shadow: 0 -18px 40px -28px color-mix(in srgb, var(--color-up-ink) 45%, transparent);
+    overflow: hidden;
+  }
+  .stack-card > * {
+    position: relative;
+    z-index: 1;
+  }
+
+  .num {
+    position: absolute;
+    right: 0.6rem;
+    top: -0.9rem;
+    z-index: 0;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(6rem, 12vw, 11rem);
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1.5px color-mix(in srgb, var(--accent) 40%, transparent);
+    pointer-events: none;
+  }
+  .copy {
+    position: relative;
+  }
+  h3 {
+    font-size: var(--text-display-lg);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    line-height: 0.95;
+  }
+  .tagline {
+    margin-top: 0.9rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--accent-text);
+  }
+  .summary {
+    margin-top: 0.9rem;
+    max-width: 44ch;
+    color: color-mix(in srgb, var(--color-up-ink) 74%, transparent);
+  }
+  .focus {
+    margin-top: 1.25rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+  }
+  .focus li {
+    font-size: 0.78rem;
+    font-weight: 500;
+    padding: 0.3rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    color: color-mix(in srgb, var(--color-up-ink) 78%, transparent);
+  }
+  .actions {
+    margin-top: 1.75rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .more {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.92rem;
+    color: var(--color-up-ink);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 70%, transparent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.3em;
+  }
+  .more:hover {
+    text-decoration-color: var(--color-up-ink);
+  }
+
+  .art {
+    position: relative;
+    aspect-ratio: 400 / 260;
+    border-radius: 1.1rem;
+    overflow: hidden;
+  }
+  .stat {
+    position: absolute;
+    left: 0.9rem;
+    bottom: 0.8rem;
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-up-ink) 72%, transparent);
+    backdrop-filter: blur(6px);
+    color: var(--color-up-paper);
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+  .stat strong {
+    font-family: var(--font-display);
+    font-size: 1.15rem;
+    color: var(--color-up-gold);
+  }
+
+  @media (max-width: 860px) {
+    .stack-card {
+      position: static;
+      grid-template-columns: 1fr;
+      min-height: 0;
+    }
+    .art {
+      order: -1;
+    }
+    .num {
+      top: auto;
+      bottom: 0;
+      font-size: 6rem;
+    }
+  }
+</style>

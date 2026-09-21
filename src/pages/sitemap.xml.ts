@@ -1,8 +1,15 @@
 import type { APIRoute } from 'astro';
 import { teams } from '@/data/teams';
+import { projects } from '@/data/projects';
 
 export const GET: APIRoute = ({ site }) => {
-  const paths = ['/', '/equipos', ...teams.map((team) => `/equipos/${team.slug}`), '/proyectos'];
+  const paths = [
+    '/',
+    '/equipos',
+    ...teams.map((team) => `/equipos/${team.slug}`),
+    '/proyectos',
+    ...projects.map((project) => `/proyectos/${project.slug}`),
+  ];
   const urls = paths.map((path) => `  <url><loc>${new URL(path, site).href}</loc></url>`).join('\n');
 
   const body = `<?xml version="1.0" encoding="UTF-8"?>

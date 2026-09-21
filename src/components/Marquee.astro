@@ -1,0 +1,68 @@
+---
+const words = ['Diseñamos', 'Programamos', 'Construimos', 'Optimizamos', 'Competimos', 'Aprendemos'];
+---
+
+<div class="marquee" role="presentation">
+  <div class="track">
+    {[0, 1].map((copy) => (
+      <ul aria-hidden={copy === 1 ? 'true' : undefined}>
+        {words.map((word, i) => (
+          <li class:list={{ solid: i % 2 === 1 }}>
+            {word}
+            <span class="sep" aria-hidden="true">✦</span>
+          </li>
+        ))}
+      </ul>
+    ))}
+  </div>
+</div>
+
+<style>
+  .marquee {
+    overflow: hidden;
+    border-block: 1px solid color-mix(in srgb, var(--color-up-ink) 12%, transparent);
+    background: var(--color-up-paper);
+    padding-block: clamp(0.9rem, 1.6vw, 1.4rem);
+  }
+  .track {
+    display: flex;
+    width: max-content;
+    animation: marquee 38s linear infinite;
+  }
+  .marquee:hover .track {
+    animation-play-state: paused;
+  }
+  ul {
+    display: flex;
+    flex: none;
+    list-style: none;
+  }
+  li {
+    display: flex;
+    align-items: center;
+    gap: clamp(1.25rem, 3vw, 2.5rem);
+    padding-right: clamp(1.25rem, 3vw, 2.5rem);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(1.9rem, 1.2rem + 3vw, 4rem);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    color: transparent;
+    -webkit-text-stroke: 1.2px var(--color-up-ink);
+    white-space: nowrap;
+  }
+  li.solid {
+    color: var(--color-up-ink);
+    -webkit-text-stroke: 0;
+  }
+  .sep {
+    font-size: 0.45em;
+    color: var(--color-up-gold);
+    -webkit-text-stroke: 0;
+  }
+
+  @keyframes marquee {
+    to { transform: translateX(-50%); }
+  }
+</style>

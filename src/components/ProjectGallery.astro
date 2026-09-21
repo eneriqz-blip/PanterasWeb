@@ -12,20 +12,31 @@ const { projects = allProjects, filterable = true } = Astro.props;
 
 <div class="gallery" data-gallery>
   {filterable && (
-    <div class="filters" role="group" aria-label="Filtrar proyectos por equipo">
-      <button type="button" class="filter is-active" data-filter="all">
-        Todos
-        <span class="count">{projects.length}</span>
-      </button>
-      {teams.map((team) => {
-        const count = projects.filter((p) => p.team === team.id).length;
-        return (
-          <button type="button" class:list={['filter', `filter--${team.color}`]} data-filter={team.id}>
-            {team.shortName}
-            <span class="count">{count}</span>
-          </button>
-        );
-      })}
+    <div class="toolbar">
+      <div class="filters" role="group" aria-label="Filtrar proyectos por equipo">
+        <button type="button" class="filter is-active" data-filter="all" aria-pressed="true">
+          Todos
+          <span class="count">{projects.length}</span>
+        </button>
+        {teams.map((team) => {
+          const count = projects.filter((p) => p.team === team.id).length;
+          return (
+            <button
+              type="button"
+              class="filter"
+              data-filter={team.id}
+              data-tone={team.color}
+              aria-pressed="false"
+            >
+              {team.shortName}
+              <span class="count">{count}</span>
+            </button>
+          );
+        })}
+      </div>
+      <p class="status" data-status role="status" aria-live="polite">
+        Mostrando {projects.length} de {projects.length} proyectos
+      </p>
     </div>
   )}
 
@@ -33,7 +44,7 @@ const { projects = allProjects, filterable = true } = Astro.props;
 
   <div class="grid" data-grid>
     {projects.map((project) => (
-      <div data-card data-card-team={project.team}>
+      <div class="cell" data-card data-card-team={project.team}>
         <ProjectCard project={project} />
       </div>
     ))}
@@ -41,48 +52,75 @@ const { projects = allProjects, filterable = true } = Astro.props;
 </div>
 
 <script>
-    const gallery = document.querySelector<HTMLElement>('[data-gallery]');
-    const buttons = gallery?.querySelectorAll<HTMLButtonElement>('[data-filter]');
-    const cards = gallery?.querySelectorAll<HTMLElement>('[data-card]');
-    const empty = gallery?.querySelector<HTMLElement>('[data-empty]');
+  const gallery = document.querySelector<HTMLElement>('[data-gallery]');
+  const buttons = Array.from(gallery?.querySelectorAll<HTMLButtonElement>('[data-filter]') ?? []);
+  const cards = Array.from(gallery?.querySelectorAll<HTMLElement>('[data-card]') ?? []);
+  const empty = gallery?.querySelector<HTMLElement>('[data-empty]');
+  const status = gallery?.querySelector<HTMLElement>('[data-status]');
+  const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    function applyFilter(team: string) {
+  if (gallery && buttons.length) {
+    const valid = new Set(buttons.map((button) => button.dataset.filter));
+
+    const apply = (team: string) => {
       let visible = 0;
-      cards?.forEach((card) => {
+      for (const card of cards) {
         const match = team === 'all' || card.dataset.cardTeam === team;
-        card.style.display = match ? '' : 'none';
+        card.hidden = !match;
         if (match) visible += 1;
-      });
+      }
+      for (const button of buttons) {
+        const active = button.dataset.filter === team;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', String(active));
+      }
       if (empty) empty.hidden = visible !== 0;
+      if (status) status.textContent = `Mostrando ${visible} de ${cards.length} proyectos`;
+    };
+
+    const select = (team: string) => {
+      if ('startViewTransition' in document && !reduceMotion) {
+        (document as Document & { startViewTransition: (cb: () => void) => unknown }).startViewTransition(() =>
+          apply(team)
+        );
+      } else {
+        apply(team);
+      }
+      const url = new URL(location.href);
+      if (team === 'all') url.searchParams.delete('equipo');
+      else url.searchParams.set('equipo', team);
+      url.hash = '';
+      history.replaceState(null, '', url);
+    };
+
+    for (const button of buttons) {
+      button.addEventListener('click', () => select(button.dataset.filter ?? 'all'));
     }
 
-    buttons?.forEach((btn) => {
-      btn.addEventListener('click', () => {
-        buttons.forEach((b) => b.classList.remove('is-active'));
-        btn.classList.add('is-active');
-        applyFilter(btn.dataset.filter ?? 'all');
-        history.replaceState(null, '', btn.dataset.filter === 'all' ? location.pathname : `#${btn.dataset.filter}`);
-      });
-    });
-
-    const initial = location.hash.replace('#', '');
-    if (initial) {
-      const match = Array.from(buttons ?? []).find((b) => b.dataset.filter === initial);
-      match?.click();
-    }
+    const requested = new URL(location.href).searchParams.get('equipo') ?? location.hash.slice(1);
+    apply(valid.has(requested) ? requested : 'all');
+  }
 </script>
 
 <style>
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    margin-bottom: 2.25rem;
+  }
   .filters {
     display: flex;
     flex-wrap: wrap;
     gap: 0.6rem;
-    margin-bottom: 2.5rem;
   }
   .filter {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    min-height: 2.75rem;
     font-family: var(--font-body);
     font-size: 0.88rem;
     font-weight: 600;
@@ -92,7 +130,12 @@ const { projects = allProjects, filterable = true } = Astro.props;
     background: transparent;
     color: var(--color-up-ink);
     cursor: pointer;
-    transition: background var(--duration-fast) ease, color var(--duration-fast) ease, border-color var(--duration-fast) ease;
+    transition: background var(--duration-fast) ease, color var(--duration-fast) ease,
+      border-color var(--duration-fast) ease, transform var(--duration-fast) var(--ease-editorial);
+  }
+  .filter:hover {
+    border-color: var(--color-up-ink);
+    transform: translateY(-1px);
   }
   .filter .count {
     font-size: 0.72rem;
@@ -101,18 +144,18 @@ const { projects = allProjects, filterable = true } = Astro.props;
     background: color-mix(in srgb, var(--color-up-ink) 10%, transparent);
   }
   .filter.is-active {
-    background: var(--color-up-ink);
-    color: var(--color-up-paper);
-    border-color: var(--color-up-ink);
+    background: var(--accent, var(--color-up-ink));
+    color: var(--on-accent, var(--color-up-paper));
+    border-color: var(--accent, var(--color-up-ink));
   }
   .filter.is-active .count {
-    background: color-mix(in srgb, var(--color-up-paper) 20%, transparent);
+    background: color-mix(in srgb, var(--on-accent, var(--color-up-paper)) 22%, transparent);
   }
 
-  .filter--blue.is-active { background: var(--color-up-blue); border-color: var(--color-up-blue); }
-  .filter--garnet.is-active { background: var(--color-up-garnet); border-color: var(--color-up-garnet); }
-  .filter--green.is-active { background: var(--color-up-green); border-color: var(--color-up-green); }
-  .filter--gold.is-active { background: var(--color-up-gold); border-color: var(--color-up-gold); color: var(--color-up-ink); }
+  .status {
+    font-size: 0.85rem;
+    color: color-mix(in srgb, var(--color-up-ink) 60%, transparent);
+  }
 
   .empty {
     padding: 3rem 0;
@@ -122,7 +165,10 @@ const { projects = allProjects, filterable = true } = Astro.props;
 
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(17.5rem, 1fr));
     gap: 1.5rem;
+  }
+  .cell[hidden] {
+    display: none;
   }
 </style>

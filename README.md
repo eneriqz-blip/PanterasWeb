@@ -22,22 +22,33 @@ Panteras/
 │  └─ social/                  # Imágenes Open Graph (pendiente de generar con fotografía real)
 ├─ src/
 │  ├─ components/
-│  │  ├─ Header.astro          # Nav sticky + mega-menú de equipos + menú móvil
+│  │  ├─ Header.astro          # Nav sticky (se oculta al bajar), menú a pantalla completa en móvil, barra de progreso
 │  │  ├─ Footer.astro
-│  │  ├─ Hero.astro            # Hero de home con sistema gráfico Franco Cuartel/Tahalí
+│  │  ├─ Hero.astro            # Hero con titular en versales y mapa interactivo
+│  │  ├─ NexusMap.astro        # Mapa SVG de los 4 equipos (nodos navegables)
+│  │  ├─ Marquee.astro         # Cinta animada (CSS)
+│  │  ├─ Manifesto.astro       # Texto que se revela palabra por palabra con el scroll (CSS)
+│  │  ├─ TeamStack.astro       # Tarjetas de equipo apiladas (position: sticky)
+│  │  ├─ FeaturedRail.astro    # Carrusel de proyectos con scroll-snap
+│  │  ├─ CoverArt.astro        # Portadas SVG generativas por equipo (sin imágenes)
 │  │  ├─ NexusMark.astro       # Lockup provisional (ver docs/BRAND.md §6)
 │  │  ├─ Button.astro
-│  │  ├─ StatRow.astro
-│  │  ├─ TeamCard.astro        # Tarjeta de presentación de equipo (grid Home/Equipos)
-│  │  ├─ ProjectCard.astro     # Tarjeta de proyecto (usada por la galería)
-│  │  ├─ ProjectGallery.astro  # Galería filtrable por equipo (vanilla JS, sin dependencias)
-│  │  └─ CTASection.astro      # Sección "Únete a Nexus Labs"
+│  │  ├─ StatRow.astro         # Cifras con contador animado
+│  │  ├─ TeamCard.astro        # Tarjeta de equipo (enlace)
+│  │  ├─ ProjectCard.astro     # Tarjeta de proyecto (enlace a su página de detalle)
+│  │  ├─ ProjectGallery.astro  # Galería filtrable por equipo (?equipo=slug)
+│  │  └─ CTASection.astro      # Sección "Únete" con botón de copiar correo
 │  ├─ data/
+│  │  ├─ site.ts               # Nombre, correo de contacto y navegación (un solo lugar)
 │  │  ├─ teams.ts              # Contenido de los 4 equipos (copy, stats, cadencia)
 │  │  └─ projects.ts           # Catálogo de proyectos por equipo
 │  ├─ layouts/
 │  │  ├─ BaseLayout.astro      # <head>, SEO/OG, Header/Footer
 │  │  └─ TeamLayout.astro      # Plantilla compartida por las 4 páginas de equipo
+│  ├─ lib/
+│  │  └─ art.ts                # Generadores deterministas del arte (redes, sprites, engranajes, flujos)
+│  ├─ scripts/
+│  │  └─ ui.ts                 # Menú, header, revelado, contadores, copiar, carrusel (~2 KB gzip)
 │  ├─ pages/
 │  │  ├─ index.astro           # Home: Quiénes somos + equipos + proyectos destacados
 │  │  ├─ equipos/
@@ -47,7 +58,8 @@ Panteras/
 │  │  │  ├─ mechanics.astro
 │  │  │  └─ iise.astro
 │  │  ├─ proyectos/
-│  │  │  └─ index.astro        # Vitrina/showcase filtrable, vinculada a cada equipo
+│  │  │  ├─ index.astro        # Vitrina/showcase filtrable, vinculada a cada equipo
+│  │  │  └─ [slug].astro       # Página de detalle de cada proyecto (reto, enfoque, métrica)
 │  │  ├─ 404.astro             # Página de error servida por Workers (not_found_handling)
 │  │  ├─ sitemap.xml.ts        # Generado en build con la URL definida en SITE_URL
 │  │  └─ robots.txt.ts

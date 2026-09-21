@@ -10,9 +10,9 @@ import { teams } from '@/data/teams';
   description="Los cuatro equipos de Nexus Labs: Computer Science, Play, Mechanics e IISE."
 >
   <section class="container-editorial header">
-    <p class="kicker">Nexus Labs · Equipos</p>
-    <h1>Cuatro disciplinas, un mismo laboratorio</h1>
-    <p class="lead">
+    <p class="kicker rise" style="--d:0">Nexus Labs · Equipos</p>
+    <h1 class="rise" style="--d:1">Cuatro disciplinas, un mismo laboratorio</h1>
+    <p class="lead rise" style="--d:2">
       Cada equipo de Nexus Labs opera como un estudio independiente, con su
       propia cadencia, herramientas y proyectos, pero comparte la misma
       manera de trabajar: retos reales, mentoría entre pares y estándares de
@@ -22,7 +22,9 @@ import { teams } from '@/data/teams';
 
   <section class="container-editorial grid">
     {teams.map((team, i) => (
-      <TeamCard team={team} index={i + 1} />
+      <div data-reveal style={`--d:${i % 2}`}>
+        <TeamCard team={team} index={i + 1} />
+      </div>
     ))}
   </section>
 
@@ -31,12 +33,15 @@ import { teams } from '@/data/teams';
 
 <style>
   .header {
-    padding-block: clamp(5rem, 7vw, 7rem) clamp(2rem, 3vw, 3rem);
-    max-width: 46rem;
+    padding-block: clamp(4rem, 6vw, 6.5rem) clamp(2rem, 3vw, 3rem);
+    max-width: 50rem;
   }
   h1 {
     margin-top: 0.75rem;
     font-size: var(--text-display-lg);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+    line-height: 0.98;
   }
   .lead {
     margin-top: 1.5rem;

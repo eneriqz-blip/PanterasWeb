@@ -1,0 +1,315 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import CoverArt from '@/components/CoverArt.astro';
+import ProjectCard from '@/components/ProjectCard.astro';
+import CTASection from '@/components/CTASection.astro';
+import Button from '@/components/Button.astro';
+import { projects, getProjectsByTeam } from '@/data/projects';
+import { getTeam } from '@/data/teams';
+
+export function getStaticPaths() {
+  return projects.map((project, index) => ({
+    params: { slug: project.slug },
+    props: {
+      project,
+      previous: projects[(index - 1 + projects.length) % projects.length],
+      next: projects[(index + 1) % projects.length],
+    },
+  }));
+}
+
+const { project, previous, next } = Astro.props;
+const team = getTeam(project.team)!;
+const related = getProjectsByTeam(project.team)
+  .filter((item) => item.slug !== project.slug)
+  .slice(0, 2);
+---
+
+<BaseLayout title={project.title} description={project.summary}>
+  <div class="project-page" data-tone={team.color}>
+    <section class="hero">
+      <div class="container-editorial hero__grid">
+        <div class="hero__copy">
+          <a class="back rise" style="--d:0" href={`/proyectos?equipo=${team.slug}`}>
+            ← Proyectos de {team.shortName}
+          </a>
+          <p class="kicker team rise" style="--d:1">
+            <a href={`/equipos/${team.slug}`}>{team.shortName}</a>
+          </p>
+          <h1 class="rise" style="--d:2">{project.title}</h1>
+          <p class="summary rise" style="--d:3">{project.summary}</p>
+          <ul class="chips rise" style="--d:4">
+            <li>{project.year}</li>
+            <li class="status" data-status={project.status}>{project.status}</li>
+            {project.tags.map((tag) => <li>{tag}</li>)}
+          </ul>
+        </div>
+
+        <div class="cover" style={`view-transition-name: cover-${project.slug}`}>
+          <CoverArt team={project.team} seed={project.slug} />
+        </div>
+      </div>
+    </section>
+
+    <section class="container-editorial metric" data-reveal>
+      <p class="metric__value">{project.metric.value}</p>
+      <p class="metric__label">{project.metric.label}</p>
+    </section>
+
+    <section class="container-editorial story">
+      <div class="story__block" data-reveal>
+        <p class="kicker">El reto</p>
+        <p class="story__text">{project.challenge}</p>
+      </div>
+      <div class="story__block" data-reveal style="--d:1">
+        <p class="kicker">Nuestro enfoque</p>
+        <p class="story__text">{project.approach}</p>
+      </div>
+    </section>
+
+    <section class="container-editorial team-card" data-reveal>
+      <div class="team-card__box">
+        <div>
+          <p class="kicker">Equipo responsable</p>
+          <h2>{team.shortName}</h2>
+          <p>{team.tagline}</p>
+        </div>
+        <Button href={`/equipos/${team.slug}`} variant="primary">Conocer al equipo</Button>
+      </div>
+    </section>
+
+    {related.length > 0 && (
+      <section class="container-editorial related">
+        <div class="related__head" data-reveal>
+          <p class="kicker">Más de {team.shortName}</p>
+          <h2>Otros proyectos del equipo</h2>
+        </div>
+        <div class="related__grid">
+          {related.map((item, i) => (
+            <div data-reveal style={`--d:${i}`}>
+              <ProjectCard project={item} />
+            </div>
+          ))}
+        </div>
+      </section>
+    )}
+
+    <nav class="container-editorial pager" aria-label="Navegar entre proyectos">
+      <a href={`/proyectos/${previous.slug}`} rel="prev">
+        <span class="kicker">← Anterior</span>
+        <span class="pager__title">{previous.title}</span>
+      </a>
+      <a href={`/proyectos/${next.slug}`} rel="next" class="pager__next">
+        <span class="kicker">Siguiente →</span>
+        <span class="pager__title">{next.title}</span>
+      </a>
+    </nav>
+
+    <CTASection />
+  </div>
+</BaseLayout>
+
+<style>
+  .hero {
+    background: color-mix(in srgb, var(--accent) 9%, var(--color-up-paper));
+    border-bottom: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+    padding-block: clamp(2rem, 4vw, 4rem) clamp(2.5rem, 5vw, 5rem);
+  }
+  .hero__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(1.75rem, 4vw, 4.5rem);
+    align-items: center;
+  }
+  .back {
+    display: inline-block;
+    padding-block: 0.4rem;
+    font-size: 0.88rem;
+    color: color-mix(in srgb, var(--color-up-ink) 70%, transparent);
+    text-decoration: none;
+  }
+  .back:hover {
+    color: var(--color-up-ink);
+    text-decoration: underline;
+  }
+  .team {
+    margin-top: 1.25rem;
+  }
+  .team a {
+    color: var(--accent-text);
+    text-decoration: none;
+  }
+  .team a:hover {
+    text-decoration: underline;
+  }
+  h1 {
+    margin-top: 0.6rem;
+    font-size: clamp(2rem, 1.2rem + 3vw, 3.9rem);
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
+  }
+  .summary {
+    margin-top: 1.4rem;
+    max-width: 46ch;
+    font-size: 1.08rem;
+    color: color-mix(in srgb, var(--color-up-ink) 76%, transparent);
+  }
+  .chips {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+  }
+  .chips li {
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: 1px solid color-mix(in srgb, var(--color-up-ink) 20%, transparent);
+    color: color-mix(in srgb, var(--color-up-ink) 75%, transparent);
+  }
+  .chips .status {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--on-accent);
+    font-weight: 600;
+  }
+
+  .cover {
+    aspect-ratio: 400 / 260;
+    border-radius: 1.5rem;
+    overflow: hidden;
+    box-shadow: 0 40px 70px -40px color-mix(in srgb, var(--accent) 70%, black);
+  }
+
+  .metric {
+    padding-block: clamp(3rem, 6vw, 5.5rem) 0;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+  }
+  .metric__value {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(3.5rem, 2rem + 7vw, 8rem);
+    line-height: 1;
+    color: var(--accent-text);
+  }
+  .metric__label {
+    font-family: var(--font-body);
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: color-mix(in srgb, var(--color-up-ink) 70%, transparent);
+  }
+
+  .story {
+    padding-block: clamp(2.5rem, 5vw, 4.5rem);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(2rem, 5vw, 5rem);
+  }
+  .story__block {
+    padding-top: 1.25rem;
+    border-top: 2px solid var(--accent);
+  }
+  .story__text {
+    margin-top: 1rem;
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: clamp(1.15rem, 1rem + 0.7vw, 1.55rem);
+    line-height: 1.35;
+    color: var(--color-up-ink);
+  }
+
+  .team-card__box {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    padding: clamp(1.5rem, 3vw, 2.5rem);
+    border-radius: 1.25rem;
+    background: color-mix(in srgb, var(--accent) 10%, var(--color-up-paper));
+    border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
+  }
+  .team-card__box h2 {
+    margin-top: 0.4rem;
+    font-size: var(--text-display-md);
+    text-transform: uppercase;
+  }
+  .team-card__box p:last-child {
+    margin-top: 0.4rem;
+    color: color-mix(in srgb, var(--color-up-ink) 72%, transparent);
+  }
+
+  .related {
+    padding-top: clamp(3rem, 6vw, 5rem);
+  }
+  .related__head h2 {
+    margin-top: 0.5rem;
+    font-size: var(--text-display-md);
+    text-transform: uppercase;
+  }
+  .related__grid {
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(17.5rem, 1fr));
+    gap: 1.5rem;
+  }
+
+  .pager {
+    padding-block: clamp(3rem, 6vw, 5rem) 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  .pager a {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.25rem 1.5rem;
+    border-radius: 1rem;
+    border: 1px solid color-mix(in srgb, var(--color-up-ink) 14%, transparent);
+    text-decoration: none;
+    color: var(--color-up-ink);
+    transition: border-color var(--duration-fast) ease, transform var(--duration-fast) var(--ease-editorial),
+      background var(--duration-fast) ease;
+  }
+  .pager a:hover {
+    border-color: var(--color-up-ink);
+    background: color-mix(in srgb, var(--color-up-ink) 4%, transparent);
+    transform: translateY(-2px);
+  }
+  .pager__next {
+    text-align: right;
+    align-items: flex-end;
+  }
+  .pager__title {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.05rem;
+    line-height: 1.2;
+  }
+
+  @media (max-width: 860px) {
+    .hero__grid,
+    .story {
+      grid-template-columns: 1fr;
+    }
+    .cover {
+      order: -1;
+    }
+  }
+  @media (max-width: 560px) {
+    .pager {
+      grid-template-columns: 1fr;
+    }
+    .pager__next {
+      text-align: left;
+      align-items: flex-start;
+    }
+  }
+</style>

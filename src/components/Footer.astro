@@ -1,6 +1,6 @@
 ---
 import NexusMark from '@/components/NexusMark.astro';
-import { teams } from '@/data/teams';
+import { site, teamLinks, navItems, mailtoHref } from '@/data/site';
 
 const year = new Date().getFullYear();
 ---
@@ -19,8 +19,8 @@ const year = new Date().getFullYear();
     <nav aria-label="Equipos">
       <span class="kicker">Equipos</span>
       <ul>
-        {teams.map((team) => (
-          <li><a href={`/equipos/${team.slug}`}>{team.shortName}</a></li>
+        {teamLinks.map((team) => (
+          <li><a href={team.href}>{team.label}</a></li>
         ))}
       </ul>
     </nav>
@@ -28,9 +28,9 @@ const year = new Date().getFullYear();
     <nav aria-label="Sitio">
       <span class="kicker">Sitio</span>
       <ul>
-        <li><a href="/">Inicio</a></li>
-        <li><a href="/equipos">Equipos</a></li>
-        <li><a href="/proyectos">Proyectos</a></li>
+        {navItems.map((item) => (
+          <li><a href={item.href}>{item.label}</a></li>
+        ))}
         <li><a href="/#unete">Únete</a></li>
       </ul>
     </nav>
@@ -38,16 +38,16 @@ const year = new Date().getFullYear();
     <div class="col-contact">
       <span class="kicker">Contacto</span>
       <ul>
-        <li><a href="mailto:nexuslabs@up.edu.mx">nexuslabs@up.edu.mx</a></li>
+        <li><a href={mailtoHref}>{site.contactEmail}</a></li>
         <li>Campus Ciudad de México</li>
-        <li>Universidad Panamericana</li>
+        <li>{site.institution}</li>
       </ul>
     </div>
   </div>
 
   <div class="container-editorial legal">
-    <p>© {year} Nexus Labs · Universidad Panamericana. Todos los derechos reservados.</p>
-    <p>Sitio construido siguiendo el Manual de Marca institucional (2020).</p>
+    <p>© {year} {site.name} · {site.institution}. Todos los derechos reservados.</p>
+    <a class="top" href="#contenido">Volver arriba ↑</a>
   </div>
 </footer>
 
@@ -78,20 +78,27 @@ const year = new Date().getFullYear();
     color: var(--color-up-gold);
   }
 
-  nav ul, .col-contact ul {
+  nav ul,
+  .col-contact ul {
     list-style: none;
     margin-top: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 0.6rem;
+    gap: 0.35rem;
   }
-  nav a, .col-contact a {
+  nav a,
+  .col-contact a {
+    display: inline-block;
+    padding-block: 0.2rem;
     color: inherit;
     text-decoration: none;
     font-size: 0.92rem;
+    transition: color var(--duration-fast) ease, transform var(--duration-fast) var(--ease-editorial);
   }
-  nav a:hover, .col-contact a:hover {
+  nav a:hover,
+  .col-contact a:hover {
     color: var(--color-up-gold);
+    transform: translateX(3px);
   }
   .col-contact li {
     font-size: 0.92rem;
@@ -102,10 +109,23 @@ const year = new Date().getFullYear();
     padding-top: 1.5rem;
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     justify-content: space-between;
-    gap: 0.5rem;
+    gap: 0.75rem;
     font-size: 0.8rem;
     color: color-mix(in srgb, var(--color-up-paper) 50%, transparent);
+  }
+  .top {
+    color: var(--color-up-paper);
+    text-decoration: none;
+    padding: 0.5rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid color-mix(in srgb, var(--color-up-paper) 25%, transparent);
+    transition: background var(--duration-fast) ease, color var(--duration-fast) ease;
+  }
+  .top:hover {
+    background: var(--color-up-paper);
+    color: var(--color-up-ink);
   }
 
   @media (max-width: 860px) {

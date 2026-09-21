@@ -1,21 +1,16 @@
 ---
 import NexusMark from '@/components/NexusMark.astro';
-import { teams } from '@/data/teams';
+import { site, navItems, teamLinks } from '@/data/site';
 
-const nav = [
-  { href: '/', label: 'Inicio' },
-  { href: '/equipos', label: 'Equipos' },
-  { href: '/proyectos', label: 'Proyectos' },
-];
-
-const currentPath = Astro.url.pathname;
+const currentPath = Astro.url.pathname.replace(/\/$/, '') || '/';
 function isActive(href: string) {
   if (href === '/') return currentPath === '/';
-  return currentPath.startsWith(href);
+  return currentPath === href || currentPath.startsWith(`${href}/`);
 }
 ---
 
 <header class="site-header" data-header>
+  <div class="progress" aria-hidden="true"></div>
   <div class="container-editorial bar">
     <a href="/" class="brand" aria-label="Nexus Labs — Inicio">
       <NexusMark size="sm" />
@@ -23,7 +18,7 @@ function isActive(href: string) {
 
     <nav class="nav" aria-label="Navegación principal">
       <ul>
-        {nav.map((item) => (
+        {navItems.map((item) => (
           <li class:list={['nav__item', { 'has-menu': item.label === 'Equipos' }]}>
             <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
               {item.label}
@@ -31,11 +26,11 @@ function isActive(href: string) {
             {item.label === 'Equipos' && (
               <div class="mega">
                 <ul>
-                  {teams.map((team) => (
+                  {teamLinks.map((team) => (
                     <li>
-                      <a href={`/equipos/${team.slug}`}>
+                      <a href={team.href}>
                         <span class:list={['dot', `dot--${team.color}`]} aria-hidden="true"></span>
-                        {team.shortName}
+                        {team.label}
                       </a>
                     </li>
                   ))}
@@ -49,68 +44,101 @@ function isActive(href: string) {
 
     <a class="cta" href="/#unete">Únete</a>
 
-    <button class="burger" type="button" aria-label="Abrir menú" aria-expanded="false" data-menu-toggle>
-      <span></span><span></span><span></span>
+    <button
+      class="burger"
+      type="button"
+      aria-label="Abrir menú"
+      aria-expanded="false"
+      aria-controls="site-menu"
+      data-menu-toggle
+    >
+      <span></span><span></span>
     </button>
-  </div>
-
-  <div class="mobile-panel" data-mobile-panel>
-    <ul>
-      {nav.map((item) => (
-        <li><a href={item.href}>{item.label}</a></li>
-      ))}
-      <li class="mobile-panel__group">
-        <span class="kicker">Equipos</span>
-        <ul>
-          {teams.map((team) => (
-            <li><a href={`/equipos/${team.slug}`}>{team.shortName}</a></li>
-          ))}
-        </ul>
-      </li>
-      <li><a class="cta cta--block" href="/#unete">Únete a Nexus Labs</a></li>
-    </ul>
   </div>
 </header>
 
-<script>
-  const toggle = document.querySelector<HTMLButtonElement>('[data-menu-toggle]');
-  const panel = document.querySelector<HTMLElement>('[data-mobile-panel]');
-  toggle?.addEventListener('click', () => {
-    const open = panel?.classList.toggle('is-open');
-    toggle.setAttribute('aria-expanded', String(Boolean(open)));
-  });
+<div class="menu" id="site-menu" inert>
+  <div class="container-editorial menu__inner">
+    <nav aria-label="Menú principal">
+      <ol class="menu__primary">
+        {navItems.map((item, i) => (
+          <li style={`--i:${i}`}>
+            <a href={item.href} aria-current={isActive(item.href) ? 'page' : undefined}>
+              <span class="n">{String(i + 1).padStart(2, '0')}</span>
+              {item.label}
+            </a>
+          </li>
+        ))}
+      </ol>
 
-  const header = document.querySelector<HTMLElement>('[data-header]');
-  document.addEventListener(
-    'scroll',
-    () => {
-      header?.classList.toggle('is-scrolled', window.scrollY > 8);
-    },
-    { passive: true }
-  );
-</script>
+      <div class="menu__teams" style={`--i:${navItems.length}`}>
+        <p class="kicker">Equipos</p>
+        <ul>
+          {teamLinks.map((team) => (
+            <li>
+              <a href={team.href}>
+                <span class:list={['dot', `dot--${team.color}`]} aria-hidden="true"></span>
+                {team.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </nav>
+
+    <div class="menu__foot" style={`--i:${navItems.length + 1}`}>
+      <a class="menu__cta" href="/#unete">Únete a Nexus Labs</a>
+      <p>{site.institution}</p>
+    </div>
+  </div>
+</div>
 
 <style>
   .site-header {
     position: sticky;
     top: 0;
-    z-index: 50;
+    z-index: 60;
+    view-transition-name: site-header;
     background: color-mix(in srgb, var(--color-up-paper) 88%, transparent);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(12px);
     border-bottom: 1px solid transparent;
-    transition: border-color var(--duration-base) var(--ease-editorial);
+    transition: transform var(--duration-base) var(--ease-editorial),
+      border-color var(--duration-base) var(--ease-editorial);
   }
   .site-header.is-scrolled {
     border-bottom-color: color-mix(in srgb, var(--color-up-ink) 10%, transparent);
+  }
+  .site-header.is-hidden {
+    transform: translateY(-100%);
+  }
+
+  .progress {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--color-up-gold), var(--color-up-garnet));
+    transform: scaleX(0);
+    transform-origin: left;
+    pointer-events: none;
+  }
+  @supports (animation-timeline: scroll()) {
+    .progress {
+      animation: grow linear both;
+      animation-timeline: scroll(root);
+    }
+    @keyframes grow {
+      to { transform: scaleX(1); }
+    }
   }
 
   .bar {
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    padding-block: 1.1rem;
+    padding-block: 0.95rem;
   }
-
   .brand {
     margin-right: auto;
     color: inherit;
@@ -122,20 +150,21 @@ function isActive(href: string) {
     list-style: none;
   }
   .nav a {
+    position: relative;
+    display: inline-block;
+    padding-block: 0.5rem;
     font-family: var(--font-body);
     font-size: 0.95rem;
     font-weight: 500;
     color: var(--color-up-ink);
     text-decoration: none;
-    padding-block: 0.4rem;
-    position: relative;
   }
   .nav a::after {
     content: '';
     position: absolute;
     left: 0;
     right: 100%;
-    bottom: -2px;
+    bottom: 0;
     height: 2px;
     background: var(--color-up-garnet);
     transition: right var(--duration-base) var(--ease-editorial);
@@ -177,18 +206,20 @@ function isActive(href: string) {
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    padding: 0.5rem 0.75rem;
+    padding: 0.55rem 0.75rem;
     border-radius: 0.5rem;
     white-space: nowrap;
   }
   .mega a:hover {
     background: color-mix(in srgb, var(--color-up-gold) 18%, transparent);
   }
-  .mega a::after { display: none; }
+  .mega a::after {
+    display: none;
+  }
 
   .dot {
-    width: 0.55rem;
-    height: 0.55rem;
+    width: 0.6rem;
+    height: 0.6rem;
     border-radius: 999px;
     flex: none;
   }
@@ -200,15 +231,16 @@ function isActive(href: string) {
   .cta {
     display: inline-flex;
     align-items: center;
+    min-height: 2.5rem;
     font-family: var(--font-body);
     font-weight: 600;
     font-size: 0.9rem;
     color: var(--color-up-paper);
     background: var(--color-up-ink);
-    padding: 0.6rem 1.15rem;
+    padding: 0.6rem 1.2rem;
     border-radius: 999px;
     text-decoration: none;
-    transition: background var(--duration-fast) ease, transform var(--duration-fast) ease;
+    transition: background var(--duration-fast) ease, transform var(--duration-fast) var(--ease-editorial);
   }
   .cta:hover {
     background: var(--color-up-garnet);
@@ -217,64 +249,150 @@ function isActive(href: string) {
 
   .burger {
     display: none;
-    flex-direction: column;
-    gap: 5px;
+    position: relative;
+    width: 2.75rem;
+    height: 2.75rem;
+    margin-right: -0.5rem;
     background: none;
     border: 0;
-    padding: 0.4rem;
     cursor: pointer;
   }
   .burger span {
-    width: 22px;
+    position: absolute;
+    left: 0.7rem;
+    right: 0.7rem;
     height: 2px;
     background: var(--color-up-ink);
-    display: block;
+    transition: transform var(--duration-base) var(--ease-editorial);
   }
+  .burger span:first-child { top: calc(50% - 4px); }
+  .burger span:last-child { top: calc(50% + 3px); }
+  :global(html.menu-open) .burger span:first-child { transform: translateY(3.5px) rotate(45deg); }
+  :global(html.menu-open) .burger span:last-child { transform: translateY(-3.5px) rotate(-45deg); }
 
-  .mobile-panel {
+  .menu {
     display: none;
   }
 
   @media (max-width: 860px) {
-    .nav, .cta { display: none; }
-    .burger { display: flex; }
-
-    .mobile-panel {
+    .nav,
+    .cta {
+      display: none;
+    }
+    .burger {
       display: block;
-      max-height: 0;
-      overflow: hidden;
+    }
+
+    .menu {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 55;
+      overflow-y: auto;
       background: var(--color-up-paper);
-      border-bottom: 1px solid color-mix(in srgb, var(--color-up-ink) 10%, transparent);
-      transition: max-height var(--duration-base) var(--ease-editorial);
+      clip-path: circle(0% at calc(100% - 1.9rem) 2.2rem);
+      visibility: hidden;
+      transition: clip-path 650ms var(--ease-editorial), visibility 0s linear 650ms;
     }
-    .mobile-panel.is-open {
-      max-height: 32rem;
+    :global(html.menu-open) .menu {
+      clip-path: circle(150% at calc(100% - 1.9rem) 2.2rem);
+      visibility: visible;
+      transition: clip-path 650ms var(--ease-editorial), visibility 0s;
     }
-    .mobile-panel > ul {
-      list-style: none;
-      padding: 1rem clamp(1.25rem, 3vw, 4rem) 1.5rem;
+    :global(html.menu-open) {
+      overflow: hidden;
+    }
+
+    .menu__inner {
+      min-height: 100%;
       display: flex;
       flex-direction: column;
-      gap: 0.9rem;
+      justify-content: space-between;
+      gap: 2rem;
+      padding-block: 6rem 2rem;
     }
-    .mobile-panel a {
-      font-family: var(--font-body);
-      font-size: 1.05rem;
+    .menu__primary {
+      list-style: none;
+    }
+    .menu__primary a {
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+      padding-block: 0.35rem;
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: clamp(2.4rem, 11vw, 3.6rem);
+      line-height: 1.05;
+      text-transform: uppercase;
       color: var(--color-up-ink);
       text-decoration: none;
     }
-    .mobile-panel__group ul {
+    .menu__primary a[aria-current='page'] {
+      color: var(--color-up-garnet);
+    }
+    .menu__primary .n {
+      font-family: var(--font-body);
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--color-up-gold-ink);
+    }
+
+    .menu__teams {
+      margin-top: 2rem;
+    }
+    .menu__teams ul {
+      margin-top: 0.75rem;
       list-style: none;
-      margin-top: 0.6rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.25rem 1rem;
+    }
+    .menu__teams a {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      min-height: 2.75rem;
+      font-family: var(--font-body);
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--color-up-ink);
+      text-decoration: none;
+    }
+
+    .menu__foot {
       display: flex;
       flex-direction: column;
-      gap: 0.6rem;
-      padding-left: 0.75rem;
+      gap: 1rem;
+      font-size: 0.85rem;
+      color: color-mix(in srgb, var(--color-up-ink) 60%, transparent);
     }
-    .cta--block {
-      margin-top: 0.5rem;
+    .menu__cta {
+      display: flex;
       justify-content: center;
-      width: 100%;
+      align-items: center;
+      min-height: 3.25rem;
+      border-radius: 999px;
+      background: var(--color-up-ink);
+      color: var(--color-up-paper);
+      font-family: var(--font-body);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .menu__primary li,
+    .menu__teams,
+    .menu__foot {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity 500ms ease, transform 600ms var(--ease-editorial);
+    }
+    :global(html.menu-open) .menu__primary li,
+    :global(html.menu-open) .menu__teams,
+    :global(html.menu-open) .menu__foot {
+      opacity: 1;
+      transform: none;
+      transition-delay: calc(180ms + var(--i, 0) * 70ms);
     }
   }
 </style>

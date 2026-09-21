@@ -5,17 +5,33 @@ interface Stat {
 }
 interface Props {
   stats: Stat[];
+  dark?: boolean;
 }
-const { stats } = Astro.props;
+const { stats, dark = false } = Astro.props;
+
+function parse(value: string) {
+  const match = value.match(/^(\d[\d,]*)(.*)$/);
+  if (!match) return null;
+  return { target: Number(match[1].replace(/,/g, '')), suffix: match[2] };
+}
 ---
 
-<ul class="stat-row">
-  {stats.map((stat) => (
-    <li>
-      <span class="value">{stat.value}</span>
-      <span class="label">{stat.label}</span>
-    </li>
-  ))}
+<ul class:list={['stat-row', { 'stat-row--dark': dark }]}>
+  {stats.map((stat) => {
+    const parsed = parse(stat.value);
+    return (
+      <li>
+        <span
+          class="value"
+          data-count={parsed ? parsed.target : undefined}
+          data-suffix={parsed ? parsed.suffix : undefined}
+        >
+          {stat.value}
+        </span>
+        <span class="label">{stat.label}</span>
+      </li>
+    );
+  })}
 </ul>
 
 <style>
@@ -34,6 +50,7 @@ const { stats } = Astro.props;
     font-family: var(--font-display);
     font-size: var(--text-display-sm);
     font-weight: 700;
+    font-variant-numeric: tabular-nums;
     color: var(--color-up-ink);
   }
   .label {
@@ -42,5 +59,16 @@ const { stats } = Astro.props;
     font-family: var(--font-body);
     font-size: 0.82rem;
     color: color-mix(in srgb, var(--color-up-ink) 60%, transparent);
+  }
+
+  .stat-row--dark li {
+    border-top-color: color-mix(in srgb, var(--color-up-paper) 22%, transparent);
+  }
+  .stat-row--dark .value {
+    font-size: clamp(2.6rem, 1.6rem + 4vw, 5rem);
+    color: var(--color-up-gold);
+  }
+  .stat-row--dark .label {
+    color: color-mix(in srgb, var(--color-up-paper) 72%, transparent);
   }
 </style>

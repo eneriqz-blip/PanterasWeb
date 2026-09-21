@@ -1,13 +1,14 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Hero from '@/components/Hero.astro';
-import TeamCard from '@/components/TeamCard.astro';
-import ProjectCard from '@/components/ProjectCard.astro';
+import Marquee from '@/components/Marquee.astro';
+import Manifesto from '@/components/Manifesto.astro';
+import TeamStack from '@/components/TeamStack.astro';
+import FeaturedRail from '@/components/FeaturedRail.astro';
 import StatRow from '@/components/StatRow.astro';
 import Button from '@/components/Button.astro';
 import CTASection from '@/components/CTASection.astro';
-import { teams } from '@/data/teams';
-import { projects } from '@/data/projects';
+import { projects, getFeatured } from '@/data/projects';
 
 const pillars = [
   {
@@ -39,7 +40,8 @@ const aggregateStats = [
   { label: 'Años de trayectoria', value: '7' },
 ];
 
-const featured = projects.slice(0, 3);
+const manifesto =
+  'Nexus Labs nació de una idea simple: la mejor forma de formar ingenieros y creadores de tecnología es dándoles proyectos reales, no sólo materias.';
 ---
 
 <BaseLayout
@@ -47,75 +49,70 @@ const featured = projects.slice(0, 3);
   description="Nexus Labs es la plataforma de clubes estudiantiles de Ingeniería y Tecnología de la Universidad Panamericana: Computer Science, Play, Mechanics e IISE."
 >
   <Hero />
+  <Marquee />
 
   <section class="container-editorial section about">
-    <div class="two-col">
-      <div>
-        <p class="kicker">Quiénes somos</p>
-        <h2>
-          Un laboratorio de talento, no un club más de la lista.
-        </h2>
-      </div>
-      <div class="prose">
-        <p>
-          Nexus Labs nació de una idea simple: la mejor forma de formar
-          ingenieros y creadores de tecnología es dándoles proyectos reales,
-          no sólo materias. Es la plataforma que reúne a los clubes
-          estudiantiles de ingeniería y tecnología de la Universidad
-          Panamericana bajo una misma manera de trabajar.
-        </p>
-        <p>
-          Creemos, como Institución, que el mundo sería mejor si todos
-          reconociéramos nuestro potencial para alcanzar la mejor versión de
-          nosotros mismos. Nexus Labs traduce ese propósito en algo concreto:
-          espacios donde un estudiante de primer semestre y uno de último año
-          construyen, se equivocan y aprenden juntos, con la disciplina de un
-          equipo profesional.
-        </p>
-      </div>
+    <Manifesto kicker="Quiénes somos" text={manifesto} />
+
+    <div class="prose" data-reveal>
+      <p>
+        Es la plataforma que reúne a los clubes estudiantiles de ingeniería y
+        tecnología de la Universidad Panamericana bajo una misma manera de
+        trabajar.
+      </p>
+      <p>
+        Creemos, como Institución, que el mundo sería mejor si todos
+        reconociéramos nuestro potencial para alcanzar la mejor versión de
+        nosotros mismos. Nexus Labs traduce ese propósito en algo concreto:
+        espacios donde un estudiante de primer semestre y uno de último año
+        construyen, se equivocan y aprenden juntos, con la disciplina de un
+        equipo profesional.
+      </p>
     </div>
 
     <div class="pillars">
-      {pillars.map((pillar) => (
-        <article class="pillar">
-          <h3>{pillar.title}</h3>
-          <p>{pillar.detail}</p>
-        </article>
+      {pillars.map((pillar, i) => (
+        <div data-reveal style={`--d:${i}`}>
+          <article class="pillar">
+            <span class="pillar__n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{pillar.title}</h3>
+            <p>{pillar.detail}</p>
+          </article>
+        </div>
       ))}
-    </div>
-
-    <div class="stats-wrap">
-      <StatRow stats={aggregateStats} />
     </div>
   </section>
 
-  <section class="container-editorial section">
-    <div class="section-head">
+  <section class="container-editorial section" id="equipos">
+    <div class="section-head" data-reveal>
       <div>
         <p class="kicker">Equipos</p>
         <h2>Elige tu disciplina</h2>
       </div>
-      <Button href="/equipos" variant="ghost">Ver los 4 equipos</Button>
+      <Button href="/equipos" variant="ghost">Comparar los 4 equipos</Button>
     </div>
-    <div class="teams-grid">
-      {teams.map((team, i) => (
-        <TeamCard team={team} index={i + 1} />
-      ))}
+    <TeamStack />
+  </section>
+
+  <section class="band">
+    <div class="container-editorial">
+      <p class="kicker" data-reveal>Nexus Labs en cifras</p>
+      <div class="band__stats" data-reveal style="--d:1">
+        <StatRow stats={aggregateStats} dark />
+      </div>
     </div>
   </section>
 
-  <section class="container-editorial section">
-    <div class="section-head">
+  <section class="container-editorial section" id="proyectos">
+    <div class="section-head" data-reveal>
       <div>
         <p class="kicker">Portafolio</p>
         <h2>Proyectos recientes</h2>
       </div>
       <Button href="/proyectos" variant="ghost">Ver todos los proyectos</Button>
     </div>
-    <div class="projects-grid">
-      {featured.map((project) => (
-        <ProjectCard project={project} />
-      ))}
+    <div data-reveal style="--d:1">
+      <FeaturedRail projects={getFeatured(6)} label="Proyectos recientes" />
     </div>
   </section>
 
@@ -127,46 +124,53 @@ const featured = projects.slice(0, 3);
     padding-block: var(--spacing-section-y);
   }
 
-  .two-col {
+  .prose {
+    margin-top: 3rem;
     display: grid;
-    grid-template-columns: 1fr 1.3fr;
-    gap: 3rem;
-  }
-  .two-col h2 {
-    margin-top: 0.75rem;
-    font-size: var(--text-display-md);
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem 3rem;
+    max-width: 62rem;
   }
   .prose p {
-    margin-top: 1rem;
     color: color-mix(in srgb, var(--color-up-ink) 78%, transparent);
-    max-width: 60ch;
   }
-  .prose p:first-child { margin-top: 0; }
 
   .pillars {
     margin-top: 4rem;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
     gap: 1.25rem;
   }
   .pillar {
+    position: relative;
+    height: 100%;
     padding: 1.75rem;
-    border-radius: 1rem;
+    border-radius: 1.1rem;
     background: color-mix(in srgb, var(--color-up-gold) 10%, var(--color-up-paper));
     border: 1px solid color-mix(in srgb, var(--color-up-gold) 30%, transparent);
+    transition: transform var(--duration-base) var(--ease-editorial),
+      box-shadow var(--duration-base) var(--ease-editorial);
+  }
+  .pillar:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 24px 40px -28px rgb(0 0 0 / 0.3);
+  }
+  .pillar__n {
+    display: block;
+    margin-bottom: 1rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--color-up-gold-ink);
   }
   .pillar h3 {
     font-family: var(--font-display);
-    font-size: 1.05rem;
+    font-size: 1.1rem;
   }
   .pillar p {
     margin-top: 0.6rem;
     font-size: 0.9rem;
     color: color-mix(in srgb, var(--color-up-ink) 68%, transparent);
-  }
-
-  .stats-wrap {
-    margin-top: 4rem;
   }
 
   .section-head {
@@ -179,23 +183,27 @@ const featured = projects.slice(0, 3);
   }
   .section-head h2 {
     margin-top: 0.5rem;
-    font-size: var(--text-display-md);
+    font-size: var(--text-display-lg);
+    text-transform: uppercase;
+    letter-spacing: 0.01em;
   }
 
-  .teams-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+  .band {
+    margin-block: 1rem;
+    padding-block: clamp(3.5rem, 6vw, 6rem);
+    background: var(--color-up-blue);
+    color: var(--color-up-paper);
   }
-
-  .projects-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
-    gap: 1.5rem;
+  .band .kicker {
+    color: color-mix(in srgb, var(--color-up-paper) 78%, transparent);
+  }
+  .band__stats {
+    margin-top: 2rem;
   }
 
   @media (max-width: 860px) {
-    .two-col { grid-template-columns: 1fr; }
-    .teams-grid { grid-template-columns: 1fr; }
+    .prose {
+      grid-template-columns: 1fr;
+    }
   }
 </style>
