@@ -26,7 +26,6 @@ Panteras/
 │  │  ├─ Footer.astro
 │  │  ├─ Hero.astro            # Hero con titular en versales y mapa interactivo
 │  │  ├─ NexusMap.astro        # Mapa SVG de los 4 equipos (nodos navegables)
-│  │  ├─ Marquee.astro         # Cinta animada (CSS)
 │  │  ├─ Manifesto.astro       # Texto que se revela palabra por palabra con el scroll (CSS)
 │  │  ├─ TeamStack.astro       # Tarjetas de equipo apiladas (position: sticky)
 │  │  ├─ FeaturedRail.astro    # Carrusel de proyectos con scroll-snap
@@ -45,7 +44,9 @@ Panteras/
 │  ├─ layouts/
 │  │  ├─ BaseLayout.astro      # <head>, SEO/OG, Header/Footer
 │  │  └─ TeamLayout.astro      # Plantilla compartida por las 4 páginas de equipo
+│  ├─ middleware.ts            # Al compilar, une palabras cortas (de, la, y…) con la siguiente (sin orfandad)
 │  ├─ lib/
+│  │  ├─ typography.ts         # Reglas de espacios de no separación para español
 │  │  └─ art.ts                # Generadores deterministas del arte (redes, sprites, engranajes, flujos)
 │  ├─ scripts/
 │  │  └─ ui.ts                 # Menú, header, revelado, contadores, copiar, carrusel (~2 KB gzip)

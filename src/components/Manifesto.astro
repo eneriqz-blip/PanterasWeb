@@ -1,11 +1,17 @@
 ---
+import { tie } from '@/lib/typography';
+
 interface Props {
   text: string;
   kicker?: string;
 }
 
 const { text, kicker } = Astro.props;
-const words = text.split(/\s+/).filter(Boolean);
+const words = tie(text).split(' ').filter(Boolean);
+if (words.length > 2) {
+  const last = words.pop() as string;
+  words[words.length - 1] = `${words[words.length - 1]} ${last}`;
+}
 ---
 
 <div class="manifesto">

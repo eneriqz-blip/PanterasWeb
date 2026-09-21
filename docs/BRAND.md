@@ -82,6 +82,8 @@ leading, alineación) siguen el Manual, pág. 213–214:
 - Destacados: minúsculas, tracking -5%.
 - Alineación: izquierda por defecto; centrada permitida sólo en redes sociales.
 
+**Palabras huérfanas.** Ninguna línea debe terminar en una palabra corta (`a`, `y`, `de`, `la`, `un`…) ni dejar una sola palabra en la última línea. Se resuelve en dos capas: CSS (`text-wrap: balance` en títulos y `pretty` en párrafos) y, para navegadores que no lo soportan, `src/middleware.ts` + `src/lib/typography.ts` sustituyen al compilar el espacio posterior a toda palabra de hasta 3 caracteres por un espacio de no separación, unen las dos últimas palabras de cada bloque y mantienen juntas expresiones como "Nexus Labs". No hay que escribir nada especial en el contenido.
+
 Escala tipográfica fluida (`--text-display-*` en `global.css`) usa `clamp()`
 para mantener proporciones consistentes entre 360px y 1920px sin *media
 queries* adicionales.
