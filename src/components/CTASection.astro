@@ -1,12 +1,21 @@
 ---
 import Button from '@/components/Button.astro';
-import { site, mailtoHref } from '@/data/site';
+import { contactFor, joinMailto } from '@/data/site';
+
+interface Props {
+  /** Equipo desde el que se llega; si se omite, el contacto es el general de Nexus. */
+  label?: string;
+  email?: string;
+}
+const { label, email } = Astro.props;
+const address = contactFor(email);
+const mailtoHref = joinMailto(label, email);
 ---
 
 <section id="unete" class="cta-section franco-cuartel">
   <div class="tahali" aria-hidden="true"></div>
   <div class="container-editorial inner">
-    <p class="kicker">Únete a Nexus Labs</p>
+    <p class="kicker">{label ? `Únete a ${label}` : 'Únete a Nexus Labs'}</p>
     <h2>
       Elige un equipo.<br />Empieza a construir esta semana.
     </h2>
@@ -18,7 +27,7 @@ import { site, mailtoHref } from '@/data/site';
     </p>
     <div class="actions">
       <Button href={mailtoHref} variant="secondary">Escríbenos por correo</Button>
-      <button type="button" class="copy" data-copy={site.contactEmail}>
+      <button type="button" class="copy" data-copy={address}>
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
           <rect x="5.5" y="5.5" width="8" height="8" rx="1.5" stroke="currentColor" stroke-width="1.4" />
           <path d="M10.5 5.5V4A1.5 1.5 0 0 0 9 2.5H4A1.5 1.5 0 0 0 2.5 4v5A1.5 1.5 0 0 0 4 10.5h1.5" stroke="currentColor" stroke-width="1.4" />
@@ -27,7 +36,7 @@ import { site, mailtoHref } from '@/data/site';
       </button>
       <Button href="/equipos" variant="ghost">Comparar los 4 equipos</Button>
     </div>
-    <p class="address">{site.contactEmail}</p>
+    <p class="address">{address}</p>
   </div>
 </section>
 

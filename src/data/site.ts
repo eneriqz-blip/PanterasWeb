@@ -7,7 +7,18 @@ export const site = {
   joinSubject: 'Quiero unirme a Nexus Labs',
 };
 
-export const mailtoHref = `mailto:${site.contactEmail}?subject=${encodeURIComponent(site.joinSubject)}`;
+/** Correo de contacto de un equipo; si no tiene uno propio se usa el general de Nexus. */
+export function contactFor(email?: string): string {
+  return email ?? site.contactEmail;
+}
+
+/** Enlace `mailto:` para unirse a un equipo (`label`) o, sin argumentos, a Nexus Labs en general. */
+export function joinMailto(label?: string, email?: string): string {
+  const subject = label ? `Quiero unirme a ${label}` : site.joinSubject;
+  return `mailto:${contactFor(email)}?subject=${encodeURIComponent(subject)}`;
+}
+
+export const mailtoHref = joinMailto();
 
 export const navItems = [
   { href: '/', label: 'Inicio' },

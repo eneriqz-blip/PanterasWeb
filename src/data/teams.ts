@@ -24,12 +24,16 @@ export interface Subteam {
   stats?: TeamStat[];
   /** `dark`: el logo es claro/de color sobre fondo oscuro; `wordmark` se muestra bajo el símbolo. */
   logo?: { src: string; alt: string; dark?: boolean; wordmark?: string };
-  gallery?: { src: string; alt: string }[];
+  gallery?: { src: string; alt: string; width: number; height: number }[];
+  /** Rótulo de la banda de fotos; por defecto "En imágenes". */
+  galleryLabel?: string;
   /** Id de la paleta (`data-tone`) cuando el equipo tiene colores propios distintos a los de su área. */
   tone?: string;
   links?: { label: string; href: string }[];
   /** Nota corta, p. ej. aclarando por qué un equipo histórico ya no está activo. */
   note?: string;
+  /** Correo al que escribe quien quiere unirse; si falta se usa el general de Nexus (`site.contactEmail`). */
+  contactEmail?: string;
 }
 
 export interface Team {
@@ -45,6 +49,8 @@ export interface Team {
   description: string[];
   stats: TeamStat[];
   joinNote?: string;
+  /** Igual que en `Subteam`: opcional, cae al correo general. */
+  contactEmail?: string;
   subteams: Subteam[];
 }
 
@@ -108,9 +114,20 @@ export const teams: Team[] = [
           dark: true,
           wordmark: '/teams/pwnteras-wordmark.svg',
         },
+        galleryLabel: 'En sesión',
         gallery: [
-          { src: '/teams/pwnteras-sesion-1.webp', alt: 'Sesión de PwnTeras: un grupo de estudiantes atiende una explicación frente a una pantalla.' },
-          { src: '/teams/pwnteras-sesion-2.webp', alt: 'Sesión de PwnTeras: integrantes con laptops frente a una pantalla con una terminal.' },
+          {
+            src: '/teams/pwnteras-sesion-1.webp',
+            alt: 'Sesión de PwnTeras: un grupo de estudiantes atiende una explicación frente a una pantalla.',
+            width: 1280,
+            height: 960,
+          },
+          {
+            src: '/teams/pwnteras-sesion-2.webp',
+            alt: 'Sesión de PwnTeras: integrantes con laptops frente a una pantalla con una terminal.',
+            width: 1280,
+            height: 960,
+          },
         ],
         links: [
           { label: 'pwnteras.dev', href: 'https://pwnteras.dev' },
@@ -331,6 +348,20 @@ export const teams: Team[] = [
           'NASBITE International Case Competition 2026, con el caso Switchgrass Spirits.',
           'Global Case Competition at Harvard, con una delegación del capítulo.',
           'Reto Actinver 2025.',
+        ],
+        gallery: [
+          {
+            src: '/teams/iise-921-delegacion.webp',
+            alt: 'Integrantes de la delegación de IISE 921 presentando ante un jurado, con una diapositiva de resumen ejecutivo al fondo.',
+            width: 577,
+            height: 440,
+          },
+          {
+            src: '/teams/iise-921-gold-award.webp',
+            alt: 'Certificado Gold Award 2026 del Chapter Recognition Program de IISE para el Chapter 921 de la Universidad Panamericana CDMX.',
+            width: 632,
+            height: 501,
+          },
         ],
         links: [{ label: 'Instagram', href: 'https://www.instagram.com/up_iise921/' }],
       },

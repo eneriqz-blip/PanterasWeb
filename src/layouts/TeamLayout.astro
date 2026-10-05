@@ -7,6 +7,7 @@ import ProjectGallery from '@/components/ProjectGallery.astro';
 import CTASection from '@/components/CTASection.astro';
 import { getTeam, teams, type TeamId } from '@/data/teams';
 import { getProjectsByTeam } from '@/data/projects';
+import { joinMailto } from '@/data/site';
 
 interface Props {
   slug: TeamId;
@@ -40,7 +41,7 @@ const inactiveSubteams = team.subteams.filter((s) => s.status === 'inactivo');
           ) : (
             <Button href="#proyectos" variant="secondary">Ver proyectos del equipo</Button>
           )}
-          <Button href="/#unete" variant="ghost">Quiero unirme</Button>
+          <Button href={joinMailto(team.shortName, team.contactEmail)} variant="ghost">Quiero unirme</Button>
         </div>
       </div>
       <div class="hero__art rise" style="--d:3">
@@ -134,7 +135,7 @@ const inactiveSubteams = team.subteams.filter((s) => s.status === 'inactivo');
     </a>
   </section>
 
-  <CTASection />
+  <CTASection label={team.shortName} email={team.contactEmail} />
 </div>
 </BaseLayout>
 

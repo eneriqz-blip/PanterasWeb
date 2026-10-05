@@ -191,6 +191,15 @@ con matrícula en el correo). Si el equipo quiere publicarlos, se agregan al
 campo `links` del subequipo. Las fotos de PwnTeras ya traen los rostros
 pixelados.
 
+## Botón "Quiero unirme"
+
+En las páginas de equipo y subequipo el botón abre un correo con el asunto
+"Quiero unirme a {equipo}" y no lleva al inicio. Si el equipo tiene el campo
+opcional `contactEmail` (en `Subteam` o `Team`, `src/data/teams.ts`) el correo
+va a esa dirección; si no, a la general (`panteras@up.edu.mx`). Hoy ningún
+equipo tiene correo propio, así que todos usan la general. La sección "Únete"
+del final de cada página muestra y copia la misma dirección.
+
 ## Miniaturas de proyectos
 
 Cada equipo sube la imagen de su proyecto y el sitio la usa sola: basta con

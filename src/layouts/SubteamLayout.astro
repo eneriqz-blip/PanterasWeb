@@ -7,6 +7,7 @@ import ProjectGallery from '@/components/ProjectGallery.astro';
 import CTASection from '@/components/CTASection.astro';
 import type { Team, Subteam } from '@/data/teams';
 import { getProjectsBySubteam } from '@/data/projects';
+import { joinMailto } from '@/data/site';
 
 interface Props {
   team: Team;
@@ -15,6 +16,8 @@ interface Props {
 const { team, subteam } = Astro.props;
 const subteamProjects = getProjectsBySubteam(team.id, subteam.slug);
 const isActive = subteam.status === 'activo';
+const contactEmail = subteam.contactEmail ?? team.contactEmail;
+const joinHref = joinMailto(subteam.name, contactEmail);
 const facts = [subteam.objective, subteam.mission, subteam.vision].filter(Boolean);
 const intro = subteam.description ?? subteam.briefDescription;
 const hasDetails =
@@ -45,7 +48,7 @@ const hasDetails =
           {subteam.note && <p class="note rise" style="--d:4">{subteam.note}</p>}
           {isActive && (
             <div class="actions rise" style="--d:5">
-              <Button href="/#unete" variant="secondary">Quiero unirme</Button>
+              <Button href={joinHref} variant="secondary">Quiero unirme</Button>
               {subteamProjects.length > 0 && (
                 <Button href="#proyectos" variant="ghost">Ver proyectos</Button>
               )}
@@ -144,11 +147,11 @@ const hasDetails =
     {subteam.gallery && subteam.gallery.length > 0 && (
       <section class="gallery-band">
         <div class="container-editorial">
-          <p class="kicker" data-reveal>En sesión</p>
+          <p class="kicker" data-reveal>{subteam.galleryLabel ?? 'En imágenes'}</p>
           <div class="photos">
             {subteam.gallery.map((photo, i) => (
               <figure data-reveal style={`--d:${i}`}>
-                <img src={photo.src} alt={photo.alt} width="1280" height="960" loading="lazy" decoding="async" />
+                <img src={photo.src} alt={photo.alt} width={photo.width} height={photo.height} loading="lazy" decoding="async" />
               </figure>
             ))}
           </div>
@@ -168,7 +171,7 @@ const hasDetails =
       </section>
     )}
 
-    <CTASection />
+    <CTASection label={subteam.name} email={contactEmail} />
   </div>
 </BaseLayout>
 
