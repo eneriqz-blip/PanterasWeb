@@ -9,15 +9,23 @@ interface Props {
 const { team, index } = Astro.props;
 ---
 
-<a href={`/equipos/${team.slug}`} class="team-card" data-tone={team.color} data-glow>
+<a href={`/equipos/${team.slug}`} class="team-card" data-tone={team.id} data-glow>
   <div class="cover">
     <CoverArt team={team.id} seed={`card-${team.id}`} />
     <span class="index">{String(index).padStart(2, '0')}</span>
+    {team.subteams.length > 0 && (
+      <span class="subteam-count">{team.subteams.length} equipos dentro</span>
+    )}
   </div>
   <div class="content">
     <h3>{team.shortName}</h3>
     <p class="tagline">{team.tagline}</p>
     <p class="summary">{team.summary}</p>
+    {team.subteams.some((s) => s.status === 'activo') && (
+      <ul class="subs" aria-label="Equipos de esta área">
+        {team.subteams.filter((s) => s.status === 'activo').map((subteam) => <li>{subteam.name}</li>)}
+      </ul>
+    )}
     <div class="footer">
       <span class="stat">{team.stats[0].value} {team.stats[0].label}</span>
       <span class="arrow" aria-hidden="true">
@@ -86,6 +94,20 @@ const { team, index } = Astro.props;
     font-weight: 700;
     color: var(--on-accent);
   }
+  .subteam-count {
+    position: absolute;
+    top: 0.8rem;
+    right: 0.9rem;
+    font-family: var(--font-body);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding: 0.3rem 0.7rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--color-up-ink) 55%, transparent);
+    color: var(--color-up-paper);
+    backdrop-filter: blur(4px);
+  }
 
   .content {
     display: flex;
@@ -107,6 +129,22 @@ const { team, index } = Astro.props;
     font-size: 0.95rem;
     color: color-mix(in srgb, var(--color-up-ink) 72%, transparent);
     max-width: 44ch;
+  }
+
+  .subs {
+    margin-top: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    list-style: none;
+  }
+  .subs li {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.65rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--accent) 12%, transparent);
+    color: var(--accent-text);
   }
 
   .footer {

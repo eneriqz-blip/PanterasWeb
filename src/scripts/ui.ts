@@ -114,6 +114,7 @@ function initMenu() {
     if (open) {
       document.querySelector<HTMLElement>('[data-header]')?.classList.remove('is-hidden');
       menu.querySelector<HTMLElement>('a')?.focus({ preventScroll: true });
+      menu.scrollTop = 0;
     } else if (restoreFocus) {
       toggle.focus({ preventScroll: true });
     }
@@ -211,4 +212,22 @@ function initGlow() {
   );
 }
 
-[initReveal, initCounters, initHeader, initMenu, initCopy, initRails, initGlow].forEach(safely);
+function initArt() {
+  const arts = document.querySelectorAll<SVGElement>('.cover-art');
+  if (!arts.length) return;
+
+  if (!('IntersectionObserver' in window)) {
+    arts.forEach((art) => art.classList.add('is-live'));
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) entry.target.classList.toggle('is-live', entry.isIntersecting);
+    },
+    { rootMargin: '80px' }
+  );
+  arts.forEach((art) => observer.observe(art));
+}
+
+[initReveal, initCounters, initHeader, initMenu, initCopy, initRails, initGlow, initArt].forEach(safely);

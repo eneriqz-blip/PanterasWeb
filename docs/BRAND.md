@@ -50,17 +50,37 @@ ya aprobado por la Institución (1955 CP), no un color inventado.
 
 **Dorado como texto.** `#B9975B` sobre blanco da ~2.6:1 de contraste (AA exige 4.5:1), así que nunca se usa como color de texto sobre fondos claros. Para texto se usa `--color-up-gold-ink` (dorado metálico con 45% de negro, ~7.9:1) y sobre fondos dorados el texto va en negro (`--on-accent`). Los colores de cada equipo se resuelven con `data-tone` en `global.css`: `--accent` (relleno), `--accent-text` (texto) y `--on-accent` (contenido sobre el relleno).
 
-**Asignación por equipo** (ver `src/data/teams.ts`): cada uno de los 4
-colores cromáticos aprobados se asigna a un equipo según el significado que
-el propio Manual le atribuye (pág. 32):
+**Color por equipo (tomado del flyer de Nexus).** El flyer oficial del
+club asigna un color a cada área y el sitio usa esos mismos valores, muestreados
+del PDF (tokens `--color-team-*` en `global.css`; cada página los aplica con
+`data-tone` = id del equipo):
 
-- Azul (*prudencia e inteligencia*) → **Computer Science**
-- Vino (*fortaleza, audacia, honor*) → **Mechanics**
-- Verde (*constancia, esperanza*) → **IISE**
-- Dorado (*excelencia, grandeza*) → **Play**
+| Equipo | Token | HEX | Contraste (texto sobre crema / blanco sobre color) |
+|---|---|---|---|
+| Play | `--color-team-play` | `#5d37a6` (violeta) | 7.7 : 1 |
+| Computer Science | `--color-team-cs` | `#477d2f` (verde) | 4.7 : 1 |
+| Mechanics | `--color-team-mechanics` | `#c22c2c` (rojo) | 5.4 : 1 |
+| IISE | `--color-team-iise` | `#004aad` (azul Nexus) | 7.7 : 1 |
 
-Esto evita introducir tonos ajenos al manual: los 4 equipos usan
-exclusivamente colores ya institucionales.
+Los cuatro cumplen AA (≥ 4.5 : 1). **Aviso de fidelidad:** el violeta, el verde
+hoja y el rojo brillante no pertenecen a la paleta del Manual de Marca UP (que
+aprueba dorado, azul, vino y verde `#00685E`). Se adoptan porque el propio club
+los definió en su flyer y así se pidió expresamente; la identidad institucional
+(dorado, vino, azul UP) se mantiene en el resto del sitio: acentos, botones,
+pie de página y menús. En el flyer IISE 921 aparece dentro del bloque verde de
+Computer Science, pero el club decidió mantener IISE como cuarta área aparte.
+
+**Color de los subequipos.** Los subequipos heredan el color de su área y se
+diferencian con un acento tonal del mismo color (ver
+`.subteam-grid > div:nth-child(even)` en `TeamLayout.astro`). La excepción es
+**PwnTeras**, que entregó su propia paleta (`Subteam.tone = 'pwnteras'`,
+`[data-tone='pwnteras']` en `global.css`): primario `#1AA734`, fondo `#090909`,
+texto `#EDEDED` y ámbar `#FFB020` de uso mínimo (solo el subrayado de los
+enlaces). El verde primario sobre crema da ~3.2 : 1, así que el texto usa una
+versión más oscura (`#12782A`, ~5.3 : 1) y el primario queda para rellenos,
+resplandor y el logo sobre fondo oscuro. Sus logos son SVG de un solo color
+(`public/teams/pwnteras-*.svg`); el wordmark se recortó con `viewBox` para
+mostrar solo el texto, porque el símbolo ya va aparte.
 
 **No usar en este proyecto:** los Pantones exclusivos del escudo (466C
 `#C6AA76`, 186C `#C8102E`, 288C ya cubierto arriba) están reservados por el
@@ -93,6 +113,8 @@ queries* adicionales.
 - **Ritmo de sección:** `--spacing-section-y` = `clamp(4rem, 3rem + 4vw, 8rem)` — mismo respiro editorial en todas las páginas (inspirado en white-desert.com).
 - **Radios:** `0.5rem`–`1.5rem` según jerarquía (botones = pill, tarjetas = `1.1–1.25rem`).
 - **Interacción y transiciones:** solo se animan `transform` y `opacity`. Las páginas usan transiciones nativas entre documentos (`@view-transition`) con la portada del proyecto como elemento compartido, y el revelado por scroll, el texto del manifiesto y la barra de progreso usan `animation-timeline` (CSS, sin JS) con degradación a contenido estático. Todo respeta `prefers-reduced-motion`. El arte de las portadas es generativo y determinista por `slug` (`src/lib/art.ts`), así que no pesa nada y no simula fotografía.
+- **Cabeceras de área:** fondo oscuro con resplandor del color del equipo y rejilla de puntos (`.area-hero` en `global.css`), título en minúsculas con degradado y color de acento claro (`--accent-bright`) para las etiquetas. Se evitó el bloque plano saturado con mayúsculas gigantes y franja diagonal porque se leía como cartel de campaña y no como una comunidad de estudiantes.
+- **Portadas animadas por área:** cada equipo tiene su propia animación SVG (`CoverArt.astro`), todas con `transform`/`opacity` y aceleradas al pasar el cursor, igual que los engranajes de Mechanics: editor de código que se escribe solo, gráficas y terminal (Computer Science), tira de película, pelota con efecto de animación y botones de control (Play, que abarca juegos, artes y cine), flujos de proceso que corren (IISE) y engranajes que giran (Mechanics). Las portadas fuera de pantalla se pausan (IntersectionObserver en `ui.ts`) y todo se desactiva con `prefers-reduced-motion`.
 - **Movimiento:** una sola curva de easing en todo el sitio, `--ease-editorial: cubic-bezier(0.16, 1, 0.3, 1)`, con 3 duraciones (`fast/base/slow`). Se respeta `prefers-reduced-motion` globalmente.
 - **Sistema gráfico institucional** ("Panamericanismo", Manual pág. 206–211): el **Franco Cuartel** (bloque de color, contenedor fotográfico) y el **Tahalí** (banda diagonal) deben aparecer siempre juntos. Implementado como utilidades `.franco-cuartel` / `.tahali` en `global.css`, reutilizadas en `Hero.astro` y `TeamLayout.astro`.
 

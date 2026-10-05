@@ -25,7 +25,7 @@ const { projects = allProjects, filterable = true } = Astro.props;
               type="button"
               class="filter"
               data-filter={team.id}
-              data-tone={team.color}
+              data-tone={team.id}
               aria-pressed="false"
             >
               {team.shortName}

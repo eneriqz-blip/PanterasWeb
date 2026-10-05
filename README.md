@@ -19,7 +19,8 @@ Panteras/
 │  ├─ favicon.svg
 │  ├─ _headers                 # Cabeceras de seguridad (CSP, X-Frame-Options…) y caché de /_astro/*
 │  ├─ fonts/                   # Tipografías con licencia (Laurentian Std, Seravek) — ver README interno
-│  └─ social/                  # Imágenes Open Graph (pendiente de generar con fotografía real)
+│  ├─ social/                  # Imágenes Open Graph (pendiente de generar con fotografía real)
+│  └─ teams/                   # Logos y fotos de equipos (DataLabs, PwnTeras)
 ├─ src/
 │  ├─ components/
 │  │  ├─ Header.astro          # Nav sticky (se oculta al bajar), menú a pantalla completa en móvil, barra de progreso
@@ -39,11 +40,12 @@ Panteras/
 │  │  └─ CTASection.astro      # Sección "Únete" con botón de copiar correo
 │  ├─ data/
 │  │  ├─ site.ts               # Nombre, correo de contacto y navegación (un solo lugar)
-│  │  ├─ teams.ts              # Contenido de los 4 equipos (copy, stats, cadencia)
+│  │  ├─ teams.ts              # Divisiones + sus subequipos (tipos Team y Subteam)
 │  │  └─ projects.ts           # Catálogo de proyectos por equipo
 │  ├─ layouts/
 │  │  ├─ BaseLayout.astro      # <head>, SEO/OG, Header/Footer
-│  │  └─ TeamLayout.astro      # Plantilla compartida por las 4 páginas de equipo
+│  │  ├─ TeamLayout.astro      # Plantilla de división (los 4 "grandes"), incluye sus subequipos
+│  │  └─ SubteamLayout.astro   # Plantilla de subequipo (p. ej. Robotics dentro de Mechanics)
 │  ├─ middleware.ts            # Al compilar, une palabras cortas (de, la, y…) con la siguiente (sin orfandad)
 │  ├─ lib/
 │  │  ├─ typography.ts         # Reglas de espacios de no separación para español
@@ -57,7 +59,9 @@ Panteras/
 │  │  │  ├─ computer-science.astro
 │  │  │  ├─ play.astro
 │  │  │  ├─ mechanics.astro
-│  │  │  └─ iise.astro
+│  │  │  ├─ iise.astro
+│  │  │  └─ [division]/
+│  │  │     └─ [subteam].astro  # Una página por subequipo (generada desde teams.ts, p. ej. /equipos/mechanics/robotics)
 │  │  ├─ proyectos/
 │  │  │  ├─ index.astro        # Vitrina/showcase filtrable, vinculada a cada equipo
 │  │  │  └─ [slug].astro       # Página de detalle de cada proyecto (reto, enfoque, métrica)
@@ -128,20 +132,78 @@ wrangler secret put NOMBRE_SECRETO
 
 nunca variables en texto plano en `wrangler.jsonc`.
 
-## Contenido y copy
+## Arquitectura: divisiones y subequipos
 
-Todo el copy (equipos, proyectos, pilares) vive en `src/data/*.ts` como
-datos tipados en TypeScript — sin `lorem ipsum` y sin necesidad de tocar
-componentes para actualizar texto, cifras o agregar un proyecto nuevo.
-Para agregar un proyecto: añade una entrada a `src/data/projects.ts`;
-aparecerá automáticamente en `/proyectos` y en la página del equipo
-correspondiente.
+Nexus se organiza en 4 "grandes" (`src/data/teams.ts`, tipo `Team`):
+Computer Science, Play, Mechanics e IISE. Dentro de una división puede haber
+varios subequipos (`Team.subteams: Subteam[]`) — por ejemplo Mechanics
+agrupa a Robotics (activo) y a Racing/Baja/Build (históricos, ya no
+activos). Cada subequipo con `subteams.length > 0` genera automáticamente:
+
+- Una tarjeta en la sección "Equipos" de la página de su división
+  (`TeamLayout.astro`), separando activos de históricos.
+- Su propia página en `/equipos/{division}/{subteam}` (`SubteamLayout.astro`,
+  ruta dinámica en `src/pages/equipos/[division]/[subteam].astro`).
+
+Un proyecto puede además asociarse a un subequipo específico con el campo
+opcional `Project.subteam` en `src/data/projects.ts` (p. ej. los proyectos
+de Robotics llevan `subteam: 'robotics'`); si no aplica, se omite.
+
+Para agregar una división nueva son 4 cambios: una entrada en `teams`, su
+`src/pages/equipos/<slug>.astro` (una línea, ver los 4 existentes), sus
+proyectos en `projects.ts`, y listo — subequipos, filtros y sitemap salen
+solos de los datos.
+
+## Contenido: solo información real
+
+Todo el texto del sitio sale de fuentes reales; no hay cifras ni descripciones
+inventadas:
+
+- **Flyer de Nexus:** nombres de las 4 áreas y los 11 equipos, descripción corta
+  de cada equipo, palabras clave y concursos por área, la frase de bienvenida
+  y los cinco beneficios (compite, crea productos, vincúlate con empleadores,
+  arma comunidad, gana experiencia real), y los **colores de cada equipo**.
+- **Mechanics / Robotics:** correo de Piero Esquiliano (coordinación).
+- **DataLabs**, **Vortex Paradox** y **PwnTeras:** sus formularios (incluye el
+  proyecto *The Pumpkin Paradox*, enlaces a Steam e Instagram, hitos y logo de
+  DataLabs; descripción, objetivo, misión, visión, actividades, enlaces, logos,
+  fotos y paleta de PwnTeras).
+- **IISE Chapter 921:** su documento de información (descripción, objetivo,
+  misión, visión, actividades, proyectos actuales y anteriores, Instagram).
+
+| Área | Equipos | Qué hay de cada equipo |
+|---|---|---|
+| **Computer Science** | DataLabs, PwnTeras, Development, Coding | DataLabs y PwnTeras: completo. Los otros 2: descripción corta del flyer |
+| **Play** | Studio, Animation, Vortex Paradox, Gaming, Vortex SIMP | Vortex Paradox: completo. Los otros 4: descripción corta del flyer |
+| **Mechanics** | Robotics (activo); Racing, Baja, Build (históricos) | Robotics: completo. Históricos: solo lo que dijo Piero |
+| **IISE** | IISE 921 | Completo (sin logo ni mesa directiva, ver privacidad) |
+
+Cuando un equipo mande su información (descripción, objetivo, misión, visión,
+actividades, proyectos), se agrega en `src/data/teams.ts` y
+`src/data/projects.ts` con el mismo formato que DataLabs o Robotics. Lo que no
+se sabe se deja fuera: las páginas no inventan nada.
+
+**Privacidad:** el repositorio es público, así que no se incluyeron los
+nombres, correos institucionales ni matrículas de líderes que aparecen en el
+flyer, ni el correo personal del líder de Vortex Paradox, ni el contacto de
+PwnTeras, ni la mesa directiva y el correo del presidente de IISE 921 (todos
+con matrícula en el correo). Si el equipo quiere publicarlos, se agregan al
+campo `links` del subequipo. Las fotos de PwnTeras ya traen los rostros
+pixelados.
+
+## Miniaturas de proyectos
+
+Cada equipo sube la imagen de su proyecto y el sitio la usa sola: basta con
+guardar `public/projects/<slug-del-proyecto>.webp` (también `avif`, `jpg`,
+`jpeg` o `png`). Si no hay imagen, la tarjeta muestra el arte animado del
+área. Detalles y nombres de archivo exactos en
+[`public/projects/README.md`](public/projects/README.md).
 
 ## Pendientes antes de producción
 
-1. **Tipografías con licencia** (Laurentian Std, Seravek) — ver `public/fonts/README.md`.
-2. **Wordmark/escudo oficial en SVG** — ver `docs/BRAND.md` §6.
-3. **Fotografía real** siguiendo el Territorio Visual del Manual — ver `docs/BRAND.md` §5.
-4. **Dominio y DNS**: apuntar `nexuslabs.up.edu.mx` (o el subdominio que defina TI) a la ruta del Worker vía un *Custom Domain* en el dashboard de Cloudflare.
-5. Definir la URL final: variable de entorno `SITE_URL` en el build (alimenta `site`, el canonical, `sitemap.xml` y `robots.txt`) y `SITE_URL` en `wrangler.jsonc`. El dominio y el correo de contacto actuales son de ejemplo.
-6. Reemplazar el contenido de ejemplo (integrantes, cifras y métricas de `src/data/*.ts`) por datos reales.
+1. **Información de los equipos que faltan**: misión, objetivo y proyectos de Development, Coding, Studio, Animation, Gaming y Vortex SIMP. PwnTeras avisó que actualizará la suya en unas semanas.
+2. **Tipografías con licencia** (Laurentian Std, Seravek) — ver `public/fonts/README.md`.
+3. **Wordmark/escudo oficial en SVG** — ver `docs/BRAND.md` §6.
+4. **Fotografía real** siguiendo el Territorio Visual del Manual — ver `docs/BRAND.md` §5.
+5. **Logos y fotografía**: el flyer trae el logo oficial de Nexus Labs y fotos del equipo, pero hacen falta los archivos originales (SVG/PNG) para usarlos; el logo de DataLabs entregado está recortado en el borde derecho. Vortex Paradox compartió una carpeta de Drive con material (key art, screenshots, fotos).
+6. **Dominio y DNS**: el sitio usa `nexuslabs.up.edu.mx` como marcador de posición para el dominio (canonical, sitemap, robots.txt, `SITE_URL`); falta confirmar el dominio final y apuntarlo al Worker vía *Custom Domain* en Cloudflare.

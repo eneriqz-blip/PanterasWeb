@@ -31,7 +31,7 @@ const ring = order.map((slug, i) => {
   </g>
   <g class="spokes" aria-hidden="true">
     {teams.map((team, i) => (
-      <line x1={center.x} y1={center.y} x2={positions[i].x} y2={positions[i].y} data-tone={team.color} />
+      <line x1={center.x} y1={center.y} x2={positions[i].x} y2={positions[i].y} data-tone={team.id} />
     ))}
   </g>
 
@@ -45,7 +45,7 @@ const ring = order.map((slug, i) => {
     <a
       href={`/equipos/${team.slug}`}
       class="node"
-      data-tone={team.color}
+      data-tone={team.id}
       style={`--i:${i}`}
       aria-label={`${team.shortName}: ${team.tagline}`}
     >

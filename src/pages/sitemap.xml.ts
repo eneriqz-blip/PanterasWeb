@@ -7,6 +7,7 @@ export const GET: APIRoute = ({ site }) => {
     '/',
     '/equipos',
     ...teams.map((team) => `/equipos/${team.slug}`),
+    ...teams.flatMap((team) => team.subteams.map((subteam) => `/equipos/${team.slug}/${subteam.slug}`)),
     '/proyectos',
     ...projects.map((project) => `/proyectos/${project.slug}`),
   ];

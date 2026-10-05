@@ -10,9 +10,9 @@ const year = new Date().getFullYear();
     <div class="col-brand">
       <NexusMark variant="light" size="md" />
       <p>
-        Nexus Labs es la plataforma de clubes estudiantiles de Ingeniería y
-        Tecnología de la Universidad Panamericana: cuatro equipos, un mismo
-        propósito de aprender construyendo.
+        Nexus Labs reúne a los grupos estudiantiles de la Facultad de
+        Ingeniería de la Universidad Panamericana: Play, Computer Science,
+        Mechanics e IISE.
       </p>
     </div>
 
@@ -37,8 +37,8 @@ const year = new Date().getFullYear();
 
     <div class="col-contact">
       <span class="kicker">Contacto</span>
+      <a class="contact-email" href={mailtoHref}>{site.contactEmail}</a>
       <ul>
-        <li><a href={mailtoHref}>{site.contactEmail}</a></li>
         <li>Campus Ciudad de México</li>
         <li>{site.institution}</li>
       </ul>
@@ -57,6 +57,7 @@ const year = new Date().getFullYear();
     color: color-mix(in srgb, var(--color-up-paper) 82%, transparent);
     padding-block: clamp(3rem, 3vw, 5rem) 2rem;
     margin-top: var(--spacing-section-y);
+    border-top: 4px solid var(--color-up-gold);
   }
 
   .grid {
@@ -65,6 +66,21 @@ const year = new Date().getFullYear();
     gap: 2.5rem;
     padding-bottom: 2.5rem;
     border-bottom: 1px solid color-mix(in srgb, var(--color-up-paper) 14%, transparent);
+  }
+
+  .contact-email {
+    display: inline-block;
+    margin-top: 1rem;
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--color-up-paper);
+    text-decoration: none;
+    border-bottom: 2px solid var(--color-up-gold);
+    transition: color var(--duration-fast) ease, border-color var(--duration-fast) ease;
+  }
+  .contact-email:hover {
+    color: var(--color-up-gold);
   }
 
   .col-brand p {

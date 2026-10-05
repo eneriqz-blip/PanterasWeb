@@ -2,29 +2,35 @@
 import CoverArt from '@/components/CoverArt.astro';
 import type { Project } from '@/data/projects';
 import { getTeam } from '@/data/teams';
+import { getThumbnail } from '@/lib/thumbnail';
 
 interface Props {
   project: Project;
 }
 const { project } = Astro.props;
 const team = getTeam(project.team)!;
+const thumbnail = getThumbnail(project);
 ---
 
 <a
   class="project-card"
   href={`/proyectos/${project.slug}`}
-  data-tone={team.color}
+  data-tone={team.id}
   data-team={project.team}
   data-glow
 >
   <div class="cover" style={`view-transition-name: cover-${project.slug}`}>
-    <CoverArt team={project.team} seed={project.slug} />
+    {thumbnail ? (
+      <img class="thumb" src={thumbnail.src} alt={thumbnail.alt} loading="lazy" decoding="async" />
+    ) : (
+      <CoverArt team={project.team} seed={project.slug} />
+    )}
     <span class="status" data-status={project.status}>{project.status}</span>
   </div>
   <div class="content">
     <div class="meta">
       <span class="team">{team.shortName}</span>
-      <span class="year">{project.year}</span>
+      {project.year && <span class="year">{project.year}</span>}
     </div>
     <h3>{project.title}</h3>
     <p>{project.summary}</p>
@@ -32,7 +38,9 @@ const team = getTeam(project.team)!;
       {project.tags.map((tag) => <li>{tag}</li>)}
     </ul>
     <div class="footer">
-      <span class="metric"><strong>{project.metric.value}</strong> {project.metric.label}</span>
+      {project.metric && (
+        <span class="metric"><strong>{project.metric.value}</strong> {project.metric.label}</span>
+      )}
       <span class="go" aria-hidden="true">
         <svg width="18" height="18" viewBox="0 0 20 20" fill="none">
           <path d="M4 10h12M12 5l5 5-5 5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
@@ -88,6 +96,16 @@ const team = getTeam(project.team)!;
   }
   .cover :global(.cover-art) {
     transition: transform 900ms var(--ease-editorial);
+  }
+  .thumb {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 900ms var(--ease-editorial);
+  }
+  .project-card:hover .thumb {
+    transform: scale(1.06);
   }
   .project-card:hover .cover :global(.cover-art) {
     transform: scale(1.06);
@@ -172,6 +190,7 @@ const team = getTeam(project.team)!;
     place-items: center;
     width: 2rem;
     height: 2rem;
+    margin-inline-start: auto;
     border-radius: 999px;
     background: var(--accent);
     color: var(--on-accent);

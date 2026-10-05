@@ -5,19 +5,47 @@ export interface TeamStat {
   value: string;
 }
 
+export interface Subteam {
+  /** Único dentro de la división (no global): la URL completa es /equipos/{division}/{slug}. */
+  slug: string;
+  name: string;
+  status: 'activo' | 'inactivo';
+  briefDescription: string;
+  /** Texto largo de "qué es y qué hace"; si existe, sustituye a briefDescription en la cabecera de la página. */
+  description?: string;
+  objective?: string;
+  mission?: string;
+  vision?: string;
+  activities?: string[];
+  currentProjects?: { label: string; items: string[] };
+  milestones?: string[];
+  /** Rótulo de la lista de hitos; por defecto "Hitos". */
+  milestonesLabel?: string;
+  stats?: TeamStat[];
+  /** `dark`: el logo es claro/de color sobre fondo oscuro; `wordmark` se muestra bajo el símbolo. */
+  logo?: { src: string; alt: string; dark?: boolean; wordmark?: string };
+  gallery?: { src: string; alt: string }[];
+  /** Id de la paleta (`data-tone`) cuando el equipo tiene colores propios distintos a los de su área. */
+  tone?: string;
+  links?: { label: string; href: string }[];
+  /** Nota corta, p. ej. aclarando por qué un equipo histórico ya no está activo. */
+  note?: string;
+}
+
 export interface Team {
   id: TeamId;
   slug: TeamId;
   shortName: string;
   fullName: string;
+  /** Línea corta bajo el nombre: las palabras clave del flyer. */
   tagline: string;
-  color: 'blue' | 'garnet' | 'green' | 'gold';
   summary: string;
+  keywords: string[];
+  events: string[];
   description: string[];
-  focusAreas: { title: string; detail: string }[];
   stats: TeamStat[];
-  cadence: string;
-  joinNote: string;
+  joinNote?: string;
+  subteams: Subteam[];
 }
 
 export const teams: Team[] = [
@@ -26,119 +54,300 @@ export const teams: Team[] = [
     slug: 'computer-science',
     shortName: 'Computer Science',
     fullName: 'Nexus Labs · Computer Science',
-    tagline: 'Software con criterio, construido en comunidad.',
-    color: 'blue',
+    tagline: 'Software · Hackeo',
+    keywords: ['Software', 'Hackeo'],
+    events: ['CSAW', 'ICPC', 'Hacker Cup'],
     summary:
-      'El equipo que convierte código en producto: desarrollo de software, inteligencia artificial y competencias de programación con estándares de la industria.',
-    description: [
-      'Computer Science reúne a estudiantes de Ingeniería en Sistemas, Ciencia de Datos y carreras afines que quieren aprender construyendo: aplicaciones reales, con revisión de código, arquitectura pensada y despliegue en producción, no sólo ejercicios de clase.',
-      'El equipo opera como una consultora interna: recibe retos de otros equipos y de la comunidad universitaria, y responde con soluciones de software —desde automatizaciones internas hasta productos completos— documentadas y mantenibles.',
-      'Semanalmente hay espacio para dos velocidades distintas: quienes se preparan para competencias de programación competitiva y hackathons, y quienes prefieren profundizar en un stack (web, IA aplicada, sistemas distribuidos) a través de proyectos de largo plazo.',
+      'Cuatro equipos para quienes quieren programar: Development (aplicaciones web y móviles), PwnTeras (CTF, criptografía y redes), Coding (programación competitiva) y DataLabs (análisis y procesos de datos).',
+    description: ['Computer Science agrupa los equipos de Nexus dedicados al software, el hackeo y los datos.'],
+    stats: [{ label: 'Equipos activos', value: '4' }],
+    subteams: [
+      {
+        slug: 'datalabs',
+        name: 'DataLabs',
+        status: 'activo',
+        briefDescription: 'Análisis y procesos de datos.',
+        description:
+          'Equipo multidisciplinario de estudiantes enfocado en la transformación de datos, la inteligencia artificial y la automatización empresarial. Diseña e implementa soluciones integrales de datos, desde la ingesta en la nube hasta modelos predictivos, asistentes de PLN y tableros ejecutivos.',
+        objective:
+          'Que los integrantes diseñen e implementen soluciones end-to-end de datos, integren IA y automatizaciones en procesos reales, y construyan un portafolio profesional.',
+        mission:
+          'Formar a estudiantes en ingeniería de datos, IA y automatización mediante talleres y proyectos prácticos, para resolver problemas reales de empresas y de la comunidad universitaria con soluciones tecnológicas.',
+        vision:
+          'Ser un equipo estudiantil de referencia en datos e inteligencia artificial, reconocido por desarrollar soluciones con impacto real —como un Data Lakehouse, un chatbot RAG interno y tableros y flujos automatizados para PyMEs locales— y por formar profesionales listos para la industria.',
+        activities: [
+          'Curso de Data Analytics y Power BI: taller práctico de modelado de datos, ETL y visualización.',
+          'Data Lakehouse & Cloud Project: proyecto avanzado de arquitectura de datos en la nube (Snowflake/AWS), con ingesta, pipelines de procesamiento y gobernanza.',
+          'Capacitación: workshops de SQL, Python, Power BI y LLMs.',
+        ],
+        note: 'Es un equipo nuevo, por lo que todavía no tiene proyectos anteriores.',
+        logo: { src: '/teams/datalabs-logo.jpg', alt: 'Logotipo de DataLabs' },
+      },
+      {
+        slug: 'pwnteras',
+        name: 'PwnTeras',
+        status: 'activo',
+        briefDescription: 'Competencias de CTF, criptografía, redes y más.',
+        description:
+          'Grupo de hackeo ético y seguridad informática de la universidad. Enseñan a quienes están empezando y compiten en CTF cada fin de semana.',
+        objective:
+          'Formar una comunidad de estudiantes capaces y éticos en ciberseguridad, que aprendan haciendo y compartan lo que saben.',
+        mission:
+          'Complementar la formación en seguridad informática mediante enseñanza, práctica constante y competencias CTF, con un enfoque ético y colaborativo.',
+        vision:
+          'Ser el grupo referente de ciberseguridad en la universidad y un equipo reconocido en CTF a nivel nacional, que forme generaciones de profesionales con ética, habilidad técnica y pasión.',
+        activities: [
+          'Aprendizaje: clases y prácticas físicas.',
+          'Práctica: máquinas designadas y actividades colaborativas.',
+          'Competencia: CTF semanales.',
+        ],
+        tone: 'pwnteras',
+        logo: {
+          src: '/teams/pwnteras-mark.svg',
+          alt: 'Logotipo de PwnTeras',
+          dark: true,
+          wordmark: '/teams/pwnteras-wordmark.svg',
+        },
+        gallery: [
+          { src: '/teams/pwnteras-sesion-1.webp', alt: 'Sesión de PwnTeras: un grupo de estudiantes atiende una explicación frente a una pantalla.' },
+          { src: '/teams/pwnteras-sesion-2.webp', alt: 'Sesión de PwnTeras: integrantes con laptops frente a una pantalla con una terminal.' },
+        ],
+        links: [
+          { label: 'pwnteras.dev', href: 'https://pwnteras.dev' },
+          { label: 'learn.pwnteras.dev', href: 'https://learn.pwnteras.dev' },
+        ],
+      },
+      {
+        slug: 'development',
+        name: 'Development',
+        status: 'activo',
+        briefDescription: 'Desarrollo full-stack de aplicaciones web y móviles.',
+        note: 'Información detallada pendiente de confirmar con el equipo.',
+      },
+      {
+        slug: 'coding',
+        name: 'Coding',
+        status: 'activo',
+        briefDescription: 'Programación competitiva.',
+        note: 'Información detallada pendiente de confirmar con el equipo.',
+      },
     ],
-    focusAreas: [
-      { title: 'Desarrollo de producto', detail: 'Equipos pequeños que llevan una idea de cero a una versión usable, con ciclos cortos de retroalimentación.' },
-      { title: 'IA aplicada', detail: 'Proyectos con modelos de lenguaje y aprendizaje automático orientados a problemas reales del campus.' },
-      { title: 'Programación competitiva', detail: 'Entrenamiento semanal y participación en competencias interuniversitarias e ICPC.' },
-      { title: 'Buenas prácticas', detail: 'Code review entre pares, control de versiones y documentación como hábito, no como trámite.' },
-    ],
-    stats: [
-      { label: 'Integrantes activos', value: '48' },
-      { label: 'Proyectos en curso', value: '9' },
-      { label: 'Años operando', value: '6' },
-      { label: 'Hackathons ganados', value: '5' },
-    ],
-    cadence: 'Sesiones los martes y jueves, 18:00–20:00 · Laboratorio de Sistemas',
-    joinNote: 'No se requiere experiencia previa en un lenguaje específico: sí, curiosidad por resolver problemas con código.',
   },
   {
     id: 'play',
     slug: 'play',
     shortName: 'Play',
     fullName: 'Nexus Labs · Play',
-    tagline: 'Diseñar mundos jugables, de la idea al playtest.',
-    color: 'gold',
+    tagline: 'Juegos · Artes · Cine',
+    keywords: ['Juegos', 'Artes', 'Cine'],
+    events: ['Pixelatl', 'Liga CONADEIP', 'Gamergy', '48 Hour Film'],
     summary:
-      'El equipo de desarrollo de videojuegos y diseño interactivo: narrativa, arte, sonido y programación de juegos trabajando como un estudio real.',
-    description: [
-      'Play existe para quienes quieren crear experiencias interactivas —videojuegos, instalaciones, experiencias en realidad aumentada— y entender el proceso completo detrás de ellas: concepto, prototipo, producción y lanzamiento.',
-      'El equipo funciona con roles de estudio (diseño, arte, programación, audio, producción) que rotan entre proyectos, para que cada integrante entienda el juego como sistema completo antes de especializarse.',
-      'Cada semestre cierra con una jornada de playtesting abierta a la comunidad universitaria, donde los prototipos se prueban con jugadores reales y se documentan hallazgos para la siguiente iteración.',
+      'Cinco equipos creativos: Gaming (equipos profesionales de eSports), Vortex Paradox y Vortex SIMP (desarrollo de videojuegos), Studio (producción audiovisual) y Animation (producción de cortos animados).',
+    description: ['Play agrupa los equipos de Nexus dedicados a los juegos, las artes y el cine.'],
+    stats: [{ label: 'Equipos activos', value: '5' }],
+    subteams: [
+      {
+        slug: 'studio',
+        name: 'Studio',
+        status: 'activo',
+        briefDescription: 'Producción audiovisual.',
+        note: 'Información detallada pendiente de confirmar con el equipo.',
+      },
+      {
+        slug: 'animation',
+        name: 'Animation',
+        status: 'activo',
+        briefDescription: 'Producción de cortos animados.',
+        note: 'Información detallada pendiente de confirmar con el equipo.',
+      },
+      {
+        slug: 'vortex-paradox',
+        name: 'Vortex Paradox',
+        status: 'activo',
+        briefDescription: 'Desarrollo de videojuegos a nivel profesional.',
+        description:
+          'Vortex Paradox es un estudio independiente de videojuegos nacido en la Universidad Panamericana. Su proyecto principal es The Pumpkin Paradox, un videojuego comercial desarrollado por un equipo multidisciplinario. Además del desarrollo del juego, participan en espacios de la industria como festivales, convocatorias, pitching, networking y eventos como Pixelatl, GCMX y Super Indie Games.',
+        objective:
+          'Crear videojuegos originales con calidad profesional y dar a los integrantes experiencia real trabajando en un proyecto comercial. También buscan acercar al equipo a la industria mediante publicación, pitching, exhibiciones, convocatorias y contacto con otros estudios y profesionales.',
+        mission:
+          'Desarrollar videojuegos originales mediante un equipo multidisciplinario, usando procesos y herramientas profesionales y dando a sus integrantes experiencia práctica dentro de una producción real.',
+        vision:
+          'Consolidarse como un estudio independiente capaz de llevar proyectos nacidos en la universidad a lanzamientos comerciales, festivales, convocatorias y oportunidades dentro de la industria.',
+        activities: [
+          'Programación y desarrollo en Unity.',
+          'Arte 2D, animación y diseño visual.',
+          'Game design y diseño de niveles.',
+          'Narrativa y escritura.',
+          'Música y audio.',
+          'QA y pruebas de juego.',
+          'Producción y coordinación entre disciplinas.',
+          'Uso de herramientas como GitHub, Notion, Blender, Rive, FMOD y Aseprite.',
+          'Preparación de builds y materiales promocionales.',
+          'Pitching, networking y desarrollo de negocio.',
+          'Participación en festivales, exposiciones y convocatorias de la industria.',
+        ],
+        milestones: [
+          'Fundación y organización de cinco ediciones de la Game Jam UP.',
+          'Más de 30 juegos de jam lanzados.',
+          '6 cursos impartidos: Unity, Blender, Pixel Art, Escritura y Producción de Videojuegos.',
+          'Expositores en el Indie Booth de EGS 2025, Game Pitch Pixelatl 2025 y Super Indie Games 2026.',
+          'Colaboraciones y vinculación con estudios y profesionales de la industria.',
+          'Participación constante en espacios como Pixelatl, GCMX y otras iniciativas de videojuegos independientes.',
+        ],
+        stats: [
+          { label: 'Ediciones de la Game Jam UP', value: '5' },
+          { label: 'Juegos de jam lanzados', value: '30+' },
+          { label: 'Cursos impartidos', value: '6' },
+        ],
+        links: [
+          { label: 'The Pumpkin Paradox en Steam', href: 'https://store.steampowered.com/app/4604640/The_Pumpkin_Paradox' },
+          { label: 'Instagram de The Pumpkin Paradox', href: 'https://www.instagram.com/pumpkin.paradox/' },
+        ],
+      },
+      {
+        slug: 'gaming',
+        name: 'Gaming',
+        status: 'activo',
+        briefDescription: 'Equipos profesionales de eSports.',
+        note: 'Información detallada pendiente de confirmar con el equipo.',
+      },
+      {
+        slug: 'vortex-simp',
+        name: 'Vortex SIMP',
+        status: 'activo',
+        briefDescription: 'Desarrollo de videojuegos accesible a principiantes.',
+        note: 'Información detallada pendiente de confirmar con el equipo.',
+      },
     ],
-    focusAreas: [
-      { title: 'Game design', detail: 'Mecánicas, balance y documentación de diseño como base de cada prototipo.' },
-      { title: 'Arte y narrativa', detail: 'Dirección de arte, worldbuilding y guion para experiencias con identidad propia.' },
-      { title: 'Programación de juegos', detail: 'Motores como Unity y Godot, con foco en rendimiento y jugabilidad.' },
-      { title: 'Playtesting', detail: 'Sesiones estructuradas de prueba con jugadores reales antes de cada entrega.' },
-    ],
-    stats: [
-      { label: 'Integrantes activos', value: '34' },
-      { label: 'Juegos publicados', value: '7' },
-      { label: 'Años operando', value: '5' },
-      { label: 'Game jams participadas', value: '11' },
-    ],
-    cadence: 'Sesiones los lunes y miércoles, 17:30–19:30 · Estudio Creativo Nexus Labs',
-    joinNote: 'Se buscan perfiles diversos: diseño, arte, audio, escritura y programación son igual de necesarios.',
   },
   {
     id: 'mechanics',
     slug: 'mechanics',
     shortName: 'Mechanics',
     fullName: 'Nexus Labs · Mechanics',
-    tagline: 'De la maqueta al prototipo funcional.',
-    color: 'garnet',
+    tagline: 'Automotriz · Mecánica · Robótica',
+    keywords: ['Automotriz', 'Mecánica', 'Robótica'],
+    events: ['Shell Eco-marathon', 'Torneo Mexicano de Robótica'],
     summary:
-      'Robótica, manufactura y diseño mecánico: el equipo que diseña, fabrica y compite con máquinas propias.',
+      'Una de las 4 áreas principales de Nexus, encargada de las disciplinas relacionadas con todo lo mecánico y mecatrónico: robótica, manufactura, diseño mecánico y más.',
     description: [
-      'Mechanics es el taller de Nexus Labs: diseño mecánico asistido por computadora, manufactura (impresión 3D, corte CNC, mecanizado básico) y electrónica embebida aplicados a robots y prototipos funcionales.',
-      'Los proyectos nacen de un problema concreto —una competencia, una necesidad del campus, un reto propuesto por la industria— y avanzan por las mismas etapas que un producto de ingeniería real: requerimientos, diseño, simulación, fabricación y pruebas.',
-      'El equipo mantiene un taller físico con herramientas compartidas y protocolos de seguridad, y forma a cada nueva generación en manufactura antes de asignarle responsabilidad sobre un subsistema completo.',
-    ],
-    focusAreas: [
-      { title: 'Diseño mecánico', detail: 'Modelado CAD, simulación estructural y diseño para manufactura.' },
-      { title: 'Manufactura', detail: 'Impresión 3D, corte láser/CNC y ensamble de prototipos funcionales.' },
-      { title: 'Electrónica y control', detail: 'Sensores, actuadores y sistemas embebidos para robótica autónoma.' },
-      { title: 'Competencias', detail: 'Participación en torneos nacionales de robótica y vehículos de diseño propio.' },
+      'El objetivo de Mechanics es proporcionar la infraestructura y la coordinación necesarias para que los equipos que la conforman desarrollen proyectos de manera eficiente, colaborativa y sostenible en el tiempo.',
+      'Su misión es impulsar la excelencia en ingeniería aplicada mediante la creación, gestión y desarrollo de equipos estudiantiles multidisciplinarios, promoviendo el aprendizaje práctico, la innovación y la resolución de problemas en mecatrónica y mecánica.',
+      'Actualmente, Robotics es el único equipo activo bajo Mechanics. Antes existieron también Racing, Baja y Build: puedes ver su historia más abajo.',
     ],
     stats: [
-      { label: 'Integrantes activos', value: '39' },
-      { label: 'Prototipos construidos', value: '14' },
-      { label: 'Años operando', value: '7' },
-      { label: 'Podios en competencia', value: '6' },
+      { label: 'Equipos activos', value: '1' },
+      { label: 'Equipos históricos', value: '3' },
+      { label: 'Proyecto actual', value: 'Dron autónomo' },
     ],
-    cadence: 'Sesiones los martes y viernes, 16:00–19:00 · Taller Mechanics',
-    joinNote: 'El taller es abierto a todas las carreras: se aprende manufactura desde cero, con acompañamiento de integrantes avanzados.',
+    joinNote: 'Robotics es, por ahora, el único equipo activo bajo Mechanics.',
+    subteams: [
+      {
+        slug: 'robotics',
+        name: 'Robotics',
+        status: 'activo',
+        briefDescription:
+          'Equipo de robótica de Nexus, enfocado actualmente en la construcción de drones, coches autónomos y sumo-bots.',
+        objective:
+          'Desarrollar proyectos autónomos y competitivos, optimizando el diseño, prototipado, programación y prueba para superar las metas del laboratorio y de las competencias.',
+        mission:
+          'Diseñar, construir y programar sistemas robóticos autónomos —incluyendo drones, coches y más— formando personas capaces de afrontar retos complejos a través de la experimentación continua, el trabajo en equipo y la participación activa en competencias.',
+        vision:
+          'Ser un equipo de robótica estudiantil referente a nivel universitario, destacando por la creación de nuestras propias ideas.',
+        activities: ['Construcción de sistemas robóticos.'],
+      },
+      {
+        slug: 'racing',
+        name: 'Racing',
+        status: 'inactivo',
+        briefDescription: 'Antiguo equipo de Mechanics. Actualmente no está activo.',
+        note: 'Uno de los equipos que históricamente formaron parte de Mechanics, junto con Baja y Build.',
+      },
+      {
+        slug: 'baja',
+        name: 'Baja',
+        status: 'inactivo',
+        briefDescription: 'Antiguo equipo de Mechanics. Actualmente no está activo.',
+        note: 'Uno de los equipos que históricamente formaron parte de Mechanics, junto con Racing y Build.',
+      },
+      {
+        slug: 'build',
+        name: 'Build',
+        status: 'inactivo',
+        briefDescription: 'Antiguo equipo de Mechanics. Actualmente no está activo.',
+        note: 'Los mini-proyectos actuales de Robotics son parecidos a lo que era Build-UP.',
+      },
+    ],
   },
   {
     id: 'iise',
     slug: 'iise',
     shortName: 'IISE',
     fullName: 'Nexus Labs · IISE — Capítulo Estudiantil',
-    tagline: 'Optimizar sistemas, decidir con datos.',
-    color: 'green',
-    summary:
-      'Capítulo estudiantil del Institute of Industrial and Systems Engineers: mejora de procesos, análisis de datos y consultoría aplicada a organizaciones reales.',
-    description: [
-      'IISE es el capítulo estudiantil ligado al Institute of Industrial and Systems Engineers dentro de Nexus Labs, enfocado en aplicar ingeniería industrial y de sistemas a problemas de operación, logística y calidad en organizaciones reales.',
-      'El equipo trabaja por proyectos de consultoría: empresas, dependencias universitarias y organizaciones sociales presentan un problema operativo, y equipos de IISE lo abordan con las herramientas de la disciplina —mapeo de procesos, simulación, análisis estadístico, Lean y Six Sigma— hasta entregar una recomendación accionable.',
-      'Además mantiene vínculo activo con la red internacional de IISE, participando en competencias de estudio de caso y foros que conectan a sus integrantes con profesionales en activo.',
+    tagline: 'Ingeniería industrial · Logística',
+    keywords: ['Ingeniería industrial', 'Logística'],
+    events: ['UN Sustainability'],
+    summary: 'Capítulo IISE de ingeniería industrial, presente en los campus Mixcoac y Ciudad UP.',
+    description: ['IISE es el capítulo IISE de ingeniería industrial de Nexus, presente en los campus Mixcoac y Ciudad UP.'],
+    stats: [{ label: 'Equipos activos', value: '1' }],
+    subteams: [
+      {
+        slug: 'iise-921',
+        name: 'IISE 921',
+        status: 'activo',
+        briefDescription: 'Capítulo IISE de ingeniería industrial.',
+        description:
+          'Capítulo estudiantil del Institute of Industrial and Systems Engineers (IISE) en la Universidad Panamericana. Conecta a los alumnos con concursos, casos de estudio, actividades académicas, proyectos de investigación y profesionales de México y el mundo, y los prepara para competir y desarrollarse más allá del salón de clase. Está abierto a alumnos de todas las carreras, no solo de Ingeniería Industrial.',
+        objective:
+          'Formar ingenieros con visión empresarial, con oportunidades prácticas para aplicar lo que aprenden en ingeniería industrial y de sistemas, a través de case competitions, concursos, talleres y vinculación con la industria y con otras universidades.',
+        mission:
+          'Formar ingenieros con visión empresarial que generen impacto en su entorno. A través de case competitions, investigación y contacto con la industria, les da herramientas y oportunidades para mejorar sistemas y procesos.',
+        vision:
+          'Ser un capítulo de referencia a nivel nacional e internacional que forme a los líderes de la industria del mañana, con un impacto que cambie la vida de sus miembros y de las comunidades a las que llega.',
+        activities: [
+          'Taller de Case Study para preparar equipos de competencia.',
+          'Participación en concursos y case competitions nacionales e internacionales.',
+          'Vinculación con empresas y otras instituciones.',
+          'Investigación.',
+          'Difusión de actividades en redes sociales.',
+        ],
+        currentProjects: {
+          label: 'Proyectos actuales · Otoño 2026 / Primavera 2027',
+          items: [
+            'Reto Actinver (modalidad Universitaria)',
+            'Global Case Competition at Harvard',
+            'NASBITE International Case Competition',
+            'Fall Global Sustainability Supply Chain Student Competition (GS3, ONU)',
+            'Concurso Rockwell IISE',
+            'Concurso Sim FI_SIM UNAM',
+            'Social Logistics Clan',
+            'Taller de Case Study 2026-2027',
+            'Ponencias',
+          ],
+        },
+        milestonesLabel: 'Proyectos anteriores relevantes',
+        milestones: [
+          'Gold Award del Chapter Recognition Program 2026 de IISE.',
+          'NASBITE International Case Competition 2026, con el caso Switchgrass Spirits.',
+          'Global Case Competition at Harvard, con una delegación del capítulo.',
+          'Reto Actinver 2025.',
+        ],
+        links: [{ label: 'Instagram', href: 'https://www.instagram.com/up_iise921/' }],
+      },
     ],
-    focusAreas: [
-      { title: 'Mejora de procesos', detail: 'Mapeo, medición y rediseño de procesos con metodologías Lean y Six Sigma.' },
-      { title: 'Analítica de operaciones', detail: 'Modelos de simulación y análisis de datos para decisiones de capacidad y logística.' },
-      { title: 'Consultoría aplicada', detail: 'Proyectos con organizaciones reales, de diagnóstico a plan de implementación.' },
-      { title: 'Comunidad profesional', detail: 'Vínculo con la red internacional IISE y participación en competencias de caso.' },
-    ],
-    stats: [
-      { label: 'Integrantes activos', value: '27' },
-      { label: 'Proyectos de consultoría', value: '12' },
-      { label: 'Años operando', value: '4' },
-      { label: 'Organizaciones atendidas', value: '9' },
-    ],
-    cadence: 'Sesiones los miércoles, 18:00–20:00 · Sala de Casos, Facultad de Ingeniería',
-    joinNote: 'Ideal para perfiles analíticos con interés en operaciones, datos o consultoría, de cualquier ingeniería.',
   },
 ];
 
 export function getTeam(slug: string): Team | undefined {
   return teams.find((t) => t.slug === slug);
+}
+
+export function getSubteam(divisionSlug: string, subteamSlug: string): { team: Team; subteam: Subteam } | undefined {
+  const team = getTeam(divisionSlug);
+  const subteam = team?.subteams.find((s) => s.slug === subteamSlug);
+  return team && subteam ? { team, subteam } : undefined;
+}
+
+export function activeSubteams(team: Team): Subteam[] {
+  return team.subteams.filter((s) => s.status === 'activo');
 }

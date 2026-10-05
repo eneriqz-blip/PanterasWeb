@@ -1,22 +1,24 @@
 ---
 import Button from '@/components/Button.astro';
 import NexusMap from '@/components/NexusMap.astro';
+import { teams } from '@/data/teams';
+
+const activeTeams = teams.flatMap((team) => team.subteams).filter((subteam) => subteam.status === 'activo').length;
 ---
 
 <section class="hero">
   <div class="container-editorial hero__grid">
     <div class="hero__copy">
-      <p class="kicker rise" style="--d:0">Nexus Labs · Universidad Panamericana</p>
+      <p class="kicker rise" style="--d:0">Nexus Labs · Facultad de Ingeniería</p>
       <h1>
-        <span class="rise" style="--d:1">Cuatro equipos.</span>
-        <span class="rise" style="--d:2">Un mismo propósito:</span>
-        <span class="rise accent" style="--d:3">aprender construyendo.</span>
+        <span class="rise" style="--d:1">Grupos estudiantiles</span>
+        <span class="rise accent" style="--d:3">para todas las carreras.</span>
       </h1>
       <p class="lead rise" style="--d:4">
-        Nexus Labs reúne a los clubes estudiantiles de ingeniería y tecnología
-        de la Universidad Panamericana —Computer Science, Play, Mechanics e
-        IISE— bajo un mismo laboratorio de proyectos reales, con mentoría
-        entre pares y estándares de la industria.
+        Nexus Labs reúne las {teams.length} áreas —Play, Computer Science,
+        Mechanics e IISE— y los {activeTeams} equipos de la Facultad de Ingeniería de la
+        Universidad Panamericana. Compite, crea productos, vincúlate con
+        empleadores, arma comunidad y gana experiencia real.
       </p>
       <div class="hero__actions rise" style="--d:5">
         <Button href="/equipos" variant="secondary">Conoce los equipos</Button>

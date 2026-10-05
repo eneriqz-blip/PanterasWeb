@@ -22,74 +22,88 @@ export function mulberry32(seed: number) {
 
 const f = (n: number) => Number(n.toFixed(1));
 
-export interface NetworkArt {
-  nodes: { x: number; y: number; r: number; ring: boolean }[];
-  edges: { x1: number; y1: number; x2: number; y2: number }[];
+export interface PlayScene {
+  angle: number;
+  cy: number;
+  frames: { x: number; faint: boolean }[];
+  holes: { x: number }[];
+  ball: { cx: number; top: number; drop: number; r: number };
+  buttons: { kind: 'triangle' | 'circle' | 'cross' | 'square'; x: number; y: number; delay: number }[];
+  brush: string;
+  sparks: { x: number; y: number; scale: number; delay: number }[];
 }
 
-export function network(seed: string): NetworkArt {
+export function playScene(seed: string): PlayScene {
   const rand = mulberry32(seedFrom(seed));
-  const cols = 6;
-  const rows = 4;
-  const nodes: NetworkArt['nodes'] = [];
+  const angle = f(-(9 + rand() * 8));
+  const cy = f(150 + (rand() - 0.5) * 24);
+  const frames = Array.from({ length: 12 }, (_, i) => ({ x: -140 + i * 64 + 8, faint: i % 2 === 1 }));
+  const holes = Array.from({ length: 24 }, (_, i) => ({ x: -140 + i * 32 + 11 }));
 
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      if (rand() < 0.2) continue;
-      nodes.push({
-        x: f(((c + 0.5) / cols) * ART_W + (rand() - 0.5) * 38),
-        y: f(((r + 0.5) / rows) * ART_H + (rand() - 0.5) * 32),
-        r: f(2 + rand() * 4),
-        ring: rand() < 0.28,
-      });
-    }
-  }
+  const r = 11;
+  const top = 58;
+  const ground = 206 + f((rand() - 0.5) * 8);
+  const ball = { cx: f(184 + rand() * 56), top, drop: f(ground - top - r), r };
 
-  const edges: NetworkArt['edges'] = [];
-  nodes.forEach((node, i) => {
-    nodes
-      .map((other, j) => ({ j, d: (other.x - node.x) ** 2 + (other.y - node.y) ** 2 }))
-      .filter((o) => o.j !== i)
-      .sort((a, b) => a.d - b.d)
-      .slice(0, 2)
-      .forEach((o) => {
-        if (o.j > i) {
-          edges.push({ x1: node.x, y1: node.y, x2: nodes[o.j].x, y2: nodes[o.j].y });
-        }
-      });
+  const bx = f(322 + (rand() - 0.5) * 24);
+  const by = f(62 + (rand() - 0.5) * 12);
+  const buttons: PlayScene['buttons'] = [
+    { kind: 'triangle', x: bx, y: by - 20, delay: 0 },
+    { kind: 'circle', x: bx + 20, y: by, delay: 0.3 },
+    { kind: 'cross', x: bx, y: by + 20, delay: 0.6 },
+    { kind: 'square', x: bx - 20, y: by, delay: 0.9 },
+  ];
+
+  const bxs = 28 + rand() * 20;
+  const brush = `M${f(bxs)} 222C${f(bxs + 40)} 184 ${f(bxs + 84)} 244 ${f(bxs + 136)} 206`;
+
+  const sparks = Array.from({ length: 4 }, () => ({
+    x: f(30 + rand() * 340),
+    y: f(24 + rand() * 90),
+    scale: f(0.6 + rand() * 0.8),
+    delay: f(rand() * 3),
+  }));
+
+  return { angle, cy, frames, holes, ball, buttons, brush, sparks };
+}
+
+export interface CodeScene {
+  lines: { x: number; y: number; w1: number; w2: number; tone: number }[];
+  caret: { x: number; y: number };
+  bars: { x: number; h: number; delay: number }[];
+  chart: string;
+  tokens: { text: string; x: number; y: number; delay: number }[];
+}
+
+export function codeScene(seed: string): CodeScene {
+  const rand = mulberry32(seedFrom(seed));
+  const baseX = 48;
+  const baseY = 82;
+  const lines = Array.from({ length: 7 }, (_, i) => {
+    const indent = [0, 1, 1, 2, 2, 1, 0][i];
+    const w1 = f(22 + rand() * 18);
+    const w2 = f(40 + rand() * 74);
+    return { x: baseX + indent * 14, y: baseY + i * 17, w1, w2, tone: Math.floor(rand() * 3) };
   });
+  const last = lines[lines.length - 1];
+  const caret = { x: f(last.x + last.w1 + last.w2 + 12), y: last.y - 1 };
 
-  return { nodes, edges };
-}
+  const bars = Array.from({ length: 5 }, (_, i) => ({
+    x: 272 + i * 19,
+    h: f(22 + rand() * 36),
+    delay: f(i * 0.3),
+  }));
 
-export interface SpriteArt {
-  cells: { x: number; y: number; o: number }[];
-  size: number;
-}
+  const pts = Array.from({ length: 6 }, (_, i) => `${f(270 + i * 17.5)} ${f(66 - rand() * 18)}`);
+  const chart = `M${pts.join('L')}`;
 
-export function sprites(seed: string): SpriteArt {
-  const rand = mulberry32(seedFrom(seed));
-  const size = 20;
-  const cols = ART_W / size;
-  const rows = Math.floor(ART_H / size);
-  const cells: SpriteArt['cells'] = [];
-  const count = 5 + Math.floor(rand() * 3);
+  const tokens = [
+    { text: '01', x: 372, y: 30, delay: 0 },
+    { text: '</>', x: 24, y: 236, delay: 1.2 },
+    { text: '{ }', x: 206, y: 240, delay: 2.2 },
+  ];
 
-  for (let k = 0; k < count; k++) {
-    const ox = Math.floor(rand() * (cols - 6));
-    const oy = Math.floor(rand() * (rows - 6));
-    const o = f(0.45 + rand() * 0.5);
-    for (let r = 0; r < 5; r++) {
-      for (let c = 0; c < 3; c++) {
-        if (rand() < 0.56) {
-          cells.push({ x: (ox + c) * size, y: (oy + r) * size, o });
-          if (c < 2) cells.push({ x: (ox + 4 - c) * size, y: (oy + r) * size, o });
-        }
-      }
-    }
-  }
-
-  return { cells, size };
+  return { lines, caret, bars, chart, tokens };
 }
 
 function gearPath(cx: number, cy: number, radius: number, teeth: number, depth: number): string {
@@ -135,7 +149,7 @@ export function gears(seed: string): GearArt {
 }
 
 export interface FlowArt {
-  nodes: { x: number; y: number; w: number; h: number }[];
+  nodes: { x: number; y: number; w: number; h: number; delay: number }[];
   links: { d: string; w: number }[];
 }
 
@@ -143,13 +157,14 @@ export function flows(seed: string): FlowArt {
   const rand = mulberry32(seedFrom(seed));
   const xs = [34, 132, 230, 328];
   const nodeW = 38;
-  const columns: { x: number; y: number; w: number; h: number }[][] = xs.map((x) => {
+  const columns: FlowArt['nodes'][] = xs.map((x, column) => {
     const n = 2 + Math.floor(rand() * 2);
     return Array.from({ length: n }, (_, i) => ({
       x,
       y: f(((i + 0.5) / n) * (ART_H - 40) + 20 - 17),
       w: nodeW,
       h: 34,
+      delay: f(column * 0.55 + i * 0.25),
     }));
   });
 

@@ -1,6 +1,6 @@
 ---
 import type { TeamId } from '@/data/teams';
-import { ART_W, ART_H, network, sprites, gears, flows } from '@/lib/art';
+import { ART_W, ART_H, playScene, codeScene, gears, flows } from '@/lib/art';
 
 interface Props {
   team: TeamId;
@@ -9,10 +9,12 @@ interface Props {
 
 const { team, seed } = Astro.props;
 
-const net = team === 'computer-science' ? network(seed) : null;
-const pix = team === 'play' ? sprites(seed) : null;
+const play = team === 'play' ? playScene(seed) : null;
+const code = team === 'computer-science' ? codeScene(seed) : null;
 const mech = team === 'mechanics' ? gears(seed) : null;
 const flow = team === 'iise' ? flows(seed) : null;
+
+const STAR = 'M0 -9L2.4 -2.4L9 0L2.4 2.4L0 9L-2.4 2.4L-9 0L-2.4 -2.4Z';
 ---
 
 <svg
@@ -23,22 +25,107 @@ const flow = team === 'iise' ? flows(seed) : null;
   focusable="false"
 >
   <rect width={ART_W} height={ART_H} class="bg" />
-  <polygon points="70,0 130,0 350,260 290,260" class="band" />
+  <circle cx="340" cy="20" r="180" class="orb orb--light" />
+  <circle cx="20" cy="270" r="160" class="orb orb--dark" />
 
-  {net && (
-    <g class="network">
-      {net.edges.map((e) => <line x1={e.x1} y1={e.y1} x2={e.x2} y2={e.y2} />)}
-      {net.nodes.map((n) =>
-        n.ring ? <circle cx={n.x} cy={n.y} r={n.r + 3} class="ring" /> : null
-      )}
-      {net.nodes.map((n) => <circle cx={n.x} cy={n.y} r={n.r} class="dot" />)}
+  {play && (
+    <g class="play">
+      <g transform={`rotate(${play.angle} 200 ${play.cy})`}>
+        <g class="reel">
+          <rect x="-140" y={play.cy - 26} width="680" height="52" class="strip" />
+          {play.frames.map((frame) => (
+            <rect
+              x={frame.x}
+              y={play.cy - 17}
+              width="48"
+              height="34"
+              rx="3"
+              class:list={['frame', { 'frame--faint': frame.faint }]}
+            />
+          ))}
+          {play.holes.map((hole) => (
+            <>
+              <rect x={hole.x} y={play.cy - 24} width="10" height="5" rx="2" class="hole" />
+              <rect x={hole.x} y={play.cy + 19} width="10" height="5" rx="2" class="hole" />
+            </>
+          ))}
+        </g>
+      </g>
+
+      <path d={play.brush} pathLength="260" class="brush" />
+
+      <ellipse
+        cx={play.ball.cx}
+        cy={play.ball.top + play.ball.drop + play.ball.r + 5}
+        rx="15"
+        ry="4"
+        class="shadow"
+      />
+      {[3, 2, 1].map((n) => (
+        <circle
+          cx={play.ball.cx}
+          cy={play.ball.top}
+          r={play.ball.r}
+          class="ball ghost"
+          style={`--drop:${play.ball.drop}px;--n:${n}`}
+        />
+      ))}
+      <circle
+        cx={play.ball.cx}
+        cy={play.ball.top}
+        r={play.ball.r}
+        class="ball main"
+        style={`--drop:${play.ball.drop}px`}
+      />
+
+      {play.buttons.map((button) => (
+        <g transform={`translate(${button.x} ${button.y})`}>
+          {button.kind === 'triangle' && <path d="M0 -8L8 6L-8 6Z" class="pad" style={`--delay:${button.delay}s`} />}
+          {button.kind === 'circle' && <circle r="8" class="pad" style={`--delay:${button.delay}s`} />}
+          {button.kind === 'cross' && <path d="M-7 -7L7 7M7 -7L-7 7" class="pad" style={`--delay:${button.delay}s`} />}
+          {button.kind === 'square' && (
+            <rect x="-7" y="-7" width="14" height="14" rx="2" class="pad" style={`--delay:${button.delay}s`} />
+          )}
+        </g>
+      ))}
+
+      {play.sparks.map((spark) => (
+        <g transform={`translate(${spark.x} ${spark.y}) scale(${spark.scale})`}>
+          <path d={STAR} class="spark" style={`--delay:${spark.delay}s`} />
+        </g>
+      ))}
     </g>
   )}
 
-  {pix && (
-    <g class="sprites">
-      {pix.cells.map((c) => (
-        <rect x={c.x + 1} y={c.y + 1} width={pix.size - 2} height={pix.size - 2} rx="2" opacity={c.o} />
+  {code && (
+    <g class="code">
+      <rect x="30" y="34" width="216" height="176" rx="12" class="win" />
+      <line x1="30" y1="58" x2="246" y2="58" class="win-rule" />
+      <circle cx="46" cy="46" r="3.5" class="win-dot win-dot--a" />
+      <circle cx="58" cy="46" r="3.5" class="win-dot" />
+      <circle cx="70" cy="46" r="3.5" class="win-dot" />
+
+      {code.lines.map((line, i) => (
+        <g class="code-line" style={`--i:${i}`}>
+          <rect x={line.x} y={line.y} width={line.w1} height="6" rx="3" class:list={['seg', `seg--${line.tone}`]} />
+          <rect x={line.x + line.w1 + 6} y={line.y} width={line.w2} height="6" rx="3" class="seg seg--text" />
+        </g>
+      ))}
+      <rect x={code.caret.x} y={code.caret.y} width="5" height="9" rx="1" class="caret" />
+
+      <rect x="258" y="40" width="118" height="96" rx="10" class="win" />
+      {code.bars.map((bar) => (
+        <rect x={bar.x} y={126 - bar.h} width="12" height={bar.h} rx="3" class="bar" style={`--delay:${bar.delay}s`} />
+      ))}
+      <path d={code.chart} pathLength="100" class="trend" />
+
+      <rect x="262" y="150" width="108" height="60" rx="10" class="win" />
+      <path d="M276 170L283 177L276 184" class="prompt" />
+      <rect x="290" y="181" width="14" height="3" rx="1.5" class="underscore" />
+      <rect x="276" y="194" width="62" height="4" rx="2" class="seg seg--text" />
+
+      {code.tokens.map((token) => (
+        <text x={token.x} y={token.y} class="token" style={`--delay:${token.delay}s`}>{token.text}</text>
       ))}
     </g>
   )}
@@ -58,7 +145,9 @@ const flow = team === 'iise' ? flows(seed) : null;
   {flow && (
     <g class="flows">
       {flow.links.map((l) => <path d={l.d} stroke-width={l.w} class="link" />)}
-      {flow.nodes.map((n) => <rect x={n.x} y={n.y} width={n.w} height={n.h} rx="4" class="node" />)}
+      {flow.nodes.map((n) => (
+        <rect x={n.x} y={n.y} width={n.w} height={n.h} rx="4" class="node" style={`--delay:${n.delay}s`} />
+      ))}
     </g>
   )}
 </svg>
@@ -69,33 +158,171 @@ const flow = team === 'iise' ? flows(seed) : null;
     width: 100%;
     height: 100%;
     --art: var(--on-accent, var(--color-up-paper));
+    --spark: var(--color-up-gold);
+    --bright: var(--accent-bright, var(--art));
+    --speed: 1;
   }
+  .cover-art:not(.is-live) * {
+    animation-play-state: paused !important;
+  }
+  :global(:is([data-glow], .stack-card, .hero__art):hover) .cover-art {
+    --speed: 0.45;
+  }
+
   .bg {
     fill: color-mix(in srgb, var(--accent, var(--color-up-blue)) 94%, black);
   }
-  .band {
+  .orb--light {
     fill: var(--art);
-    opacity: 0.09;
+    opacity: 0.1;
+  }
+  .orb--dark {
+    fill: #000;
+    opacity: 0.24;
   }
 
-  .network line {
-    stroke: var(--art);
-    stroke-width: 1;
-    opacity: 0.4;
-  }
-  .network .dot {
+  .play .strip {
     fill: var(--art);
-    opacity: 0.9;
+    opacity: 0.12;
   }
-  .network .ring {
+  .play .frame {
+    fill: var(--art);
+    opacity: 0.22;
+  }
+  .play .frame--faint {
+    opacity: 0.1;
+  }
+  .play .hole {
+    fill: color-mix(in srgb, var(--accent, #000) 35%, black);
+  }
+  .play .reel {
+    animation: reel-roll calc(5s * var(--speed)) linear infinite;
+  }
+  .play .brush {
+    fill: none;
+    stroke: var(--spark);
+    stroke-width: 9;
+    stroke-linecap: round;
+    stroke-dasharray: 260;
+    stroke-dashoffset: 260;
+    opacity: 0.9;
+    animation: brush-draw calc(4.6s * var(--speed)) ease-in-out infinite;
+  }
+  .play .shadow {
+    fill: #000;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: shadow-pulse calc(1.8s * var(--speed)) ease-in-out infinite;
+  }
+  .play .ball {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: ball-bounce calc(1.8s * var(--speed)) infinite;
+  }
+  .play .ball.main {
+    fill: var(--spark);
+  }
+  .play .ball.ghost {
+    fill: var(--spark);
+    opacity: calc(0.34 - var(--n) * 0.09);
+    animation-delay: calc(var(--n) * 0.07s * var(--speed));
+  }
+  .play .pad {
     fill: none;
     stroke: var(--art);
-    stroke-width: 1;
-    opacity: 0.5;
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    transform-box: fill-box;
+    transform-origin: center;
+    opacity: 0.6;
+    animation: pad-press calc(2.4s * var(--speed)) ease-in-out var(--delay) infinite;
+  }
+  .play .spark {
+    fill: var(--spark);
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: spark-twinkle calc(2.6s * var(--speed)) ease-in-out var(--delay) infinite;
   }
 
-  .sprites rect {
+  .code .win {
     fill: var(--art);
+    fill-opacity: 0.1;
+    stroke: var(--art);
+    stroke-opacity: 0.3;
+  }
+  .code .win-rule {
+    stroke: var(--art);
+    stroke-opacity: 0.2;
+  }
+  .code .win-dot {
+    fill: var(--art);
+    opacity: 0.5;
+  }
+  .code .win-dot--a {
+    fill: var(--spark);
+    opacity: 1;
+  }
+  .code .seg {
+    opacity: 0.9;
+  }
+  .code .seg--0 {
+    fill: var(--spark);
+  }
+  .code .seg--1 {
+    fill: var(--bright);
+  }
+  .code .seg--2,
+  .code .seg--text {
+    fill: var(--art);
+  }
+  .code .seg--text {
+    opacity: 0.55;
+  }
+  .code .code-line {
+    transform-box: fill-box;
+    transform-origin: left center;
+    animation: type-line calc(6.8s * var(--speed)) ease-out calc(var(--i) * 0.5s * var(--speed)) infinite;
+  }
+  .code .caret {
+    fill: var(--spark);
+    animation: caret-blink calc(1s * var(--speed)) steps(2, start) infinite;
+  }
+  .code .bar {
+    fill: var(--bright);
+    opacity: 0.9;
+    transform-box: fill-box;
+    transform-origin: bottom;
+    animation: bar-pulse calc(3.6s * var(--speed)) ease-in-out var(--delay) infinite;
+  }
+  .code .trend {
+    fill: none;
+    stroke: var(--spark);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: trend-draw calc(5s * var(--speed)) ease-in-out infinite;
+  }
+  .code .prompt {
+    fill: none;
+    stroke: var(--spark);
+    stroke-width: 2.4;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .code .underscore {
+    fill: var(--art);
+    animation: caret-blink calc(1.1s * var(--speed)) steps(2, start) infinite;
+  }
+  .code .token {
+    fill: var(--art);
+    opacity: 0.55;
+    font-family: ui-monospace, 'Cascadia Code', Menlo, monospace;
+    font-size: 16px;
+    font-weight: 700;
+    animation: token-float calc(5s * var(--speed)) ease-in-out var(--delay) infinite;
   }
 
   .mechanics .ring {
@@ -116,26 +343,174 @@ const flow = team === 'iise' ? flows(seed) : null;
     transform-box: view-box;
     transition: transform 1.6s var(--ease-editorial);
   }
-  :global([data-glow]:hover) .gear--0,
-  :global(.stack-card:hover) .gear--0 {
+  :global(:is([data-glow], .stack-card, .hero__art):hover) .gear--0 {
     transform: rotate(35deg);
   }
-  :global([data-glow]:hover) .gear--1,
-  :global(.stack-card:hover) .gear--1 {
+  :global(:is([data-glow], .stack-card, .hero__art):hover) .gear--1 {
     transform: rotate(-46deg);
   }
-  :global([data-glow]:hover) .gear--2,
-  :global(.stack-card:hover) .gear--2 {
+  :global(:is([data-glow], .stack-card, .hero__art):hover) .gear--2 {
     transform: rotate(38deg);
   }
 
   .flows .link {
     fill: none;
     stroke: var(--art);
-    opacity: 0.28;
+    stroke-dasharray: 7 11;
+    opacity: 0.4;
+    animation: flow-run calc(2.4s * var(--speed)) linear infinite;
   }
   .flows .node {
     fill: var(--art);
     opacity: 0.9;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: node-glow calc(2.8s * var(--speed)) ease-in-out var(--delay, 0s) infinite;
+  }
+
+  @keyframes reel-roll {
+    to {
+      transform: translateX(-128px);
+    }
+  }
+  @keyframes brush-draw {
+    0% {
+      stroke-dashoffset: 260;
+    }
+    45%,
+    70% {
+      stroke-dashoffset: 0;
+    }
+    100% {
+      stroke-dashoffset: -260;
+    }
+  }
+  @keyframes ball-bounce {
+    0% {
+      transform: translateY(0) scale(1, 1);
+      animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+    }
+    45% {
+      transform: translateY(var(--drop)) scale(1, 1);
+      animation-timing-function: linear;
+    }
+    50% {
+      transform: translateY(var(--drop)) scale(1.35, 0.65);
+      animation-timing-function: linear;
+    }
+    55% {
+      transform: translateY(var(--drop)) scale(1, 1);
+      animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1);
+    }
+    100% {
+      transform: translateY(0) scale(1, 1);
+    }
+  }
+  @keyframes shadow-pulse {
+    0%,
+    100% {
+      transform: scale(0.45);
+      opacity: 0.12;
+    }
+    50% {
+      transform: scale(1);
+      opacity: 0.38;
+    }
+  }
+  @keyframes pad-press {
+    0%,
+    55%,
+    100% {
+      transform: scale(1);
+      opacity: 0.6;
+    }
+    10%,
+    25% {
+      transform: scale(1.4);
+      opacity: 1;
+    }
+  }
+  @keyframes spark-twinkle {
+    0%,
+    100% {
+      transform: scale(0.4);
+      opacity: 0.2;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 1;
+    }
+  }
+  @keyframes type-line {
+    0% {
+      transform: scaleX(0);
+      opacity: 1;
+    }
+    10% {
+      transform: scaleX(1);
+    }
+    90% {
+      transform: scaleX(1);
+      opacity: 1;
+    }
+    98% {
+      transform: scaleX(1);
+      opacity: 0;
+    }
+    100% {
+      transform: scaleX(0);
+      opacity: 0;
+    }
+  }
+  @keyframes caret-blink {
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes bar-pulse {
+    0%,
+    100% {
+      transform: scaleY(0.35);
+    }
+    50% {
+      transform: scaleY(1);
+    }
+  }
+  @keyframes trend-draw {
+    0% {
+      stroke-dashoffset: 100;
+    }
+    55%,
+    80% {
+      stroke-dashoffset: 0;
+    }
+    100% {
+      stroke-dashoffset: -100;
+    }
+  }
+  @keyframes token-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+  }
+  @keyframes flow-run {
+    to {
+      stroke-dashoffset: -36;
+    }
+  }
+  @keyframes node-glow {
+    0%,
+    100% {
+      opacity: 0.55;
+      transform: scale(1);
+    }
+    40% {
+      opacity: 1;
+      transform: scale(1.14);
+    }
   }
 </style>

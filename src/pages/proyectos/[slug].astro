@@ -5,7 +5,8 @@ import ProjectCard from '@/components/ProjectCard.astro';
 import CTASection from '@/components/CTASection.astro';
 import Button from '@/components/Button.astro';
 import { projects, getProjectsByTeam } from '@/data/projects';
-import { getTeam } from '@/data/teams';
+import { getTeam, getSubteam } from '@/data/teams';
+import { getThumbnail } from '@/lib/thumbnail';
 
 export function getStaticPaths() {
   return projects.map((project, index) => ({
@@ -20,13 +21,15 @@ export function getStaticPaths() {
 
 const { project, previous, next } = Astro.props;
 const team = getTeam(project.team)!;
+const thumbnail = getThumbnail(project);
+const subteam = project.subteam ? getSubteam(project.team, project.subteam)?.subteam : undefined;
 const related = getProjectsByTeam(project.team)
   .filter((item) => item.slug !== project.slug)
   .slice(0, 2);
 ---
 
 <BaseLayout title={project.title} description={project.summary}>
-  <div class="project-page" data-tone={team.color}>
+  <div class="project-page" data-tone={team.id}>
     <section class="hero">
       <div class="container-editorial hero__grid">
         <div class="hero__copy">
@@ -35,46 +38,71 @@ const related = getProjectsByTeam(project.team)
           </a>
           <p class="kicker team rise" style="--d:1">
             <a href={`/equipos/${team.slug}`}>{team.shortName}</a>
+            {subteam && (
+              <>
+                {' · '}
+                <a href={`/equipos/${team.slug}/${subteam.slug}`}>{subteam.name}</a>
+              </>
+            )}
           </p>
           <h1 class="rise" style="--d:2">{project.title}</h1>
           <p class="summary rise" style="--d:3">{project.summary}</p>
           <ul class="chips rise" style="--d:4">
-            <li>{project.year}</li>
+            {project.year && <li>{project.year}</li>}
             <li class="status" data-status={project.status}>{project.status}</li>
             {project.tags.map((tag) => <li>{tag}</li>)}
           </ul>
         </div>
 
         <div class="cover" style={`view-transition-name: cover-${project.slug}`}>
-          <CoverArt team={project.team} seed={project.slug} />
+          {thumbnail ? (
+            <img class="thumb" src={thumbnail.src} alt={thumbnail.alt} decoding="async" />
+          ) : (
+            <CoverArt team={project.team} seed={project.slug} />
+          )}
         </div>
       </div>
     </section>
 
-    <section class="container-editorial metric" data-reveal>
-      <p class="metric__value">{project.metric.value}</p>
-      <p class="metric__label">{project.metric.label}</p>
-    </section>
+    {project.metric && (
+      <section class="container-editorial metric" data-reveal>
+        <p class="metric__value">{project.metric.value}</p>
+        <p class="metric__label">{project.metric.label}</p>
+      </section>
+    )}
 
-    <section class="container-editorial story">
-      <div class="story__block" data-reveal>
-        <p class="kicker">El reto</p>
-        <p class="story__text">{project.challenge}</p>
-      </div>
-      <div class="story__block" data-reveal style="--d:1">
-        <p class="kicker">Nuestro enfoque</p>
-        <p class="story__text">{project.approach}</p>
-      </div>
-    </section>
+    {project.details && project.details.length > 0 && (
+      <section class="container-editorial story">
+        {project.details.map((detail, i) => (
+          <div class="story__block" data-reveal style={`--d:${i}`}>
+            <p class="kicker">{detail.label}</p>
+            <p class="story__text">{detail.text}</p>
+          </div>
+        ))}
+      </section>
+    )}
+
+    {project.links && project.links.length > 0 && (
+      <section class="container-editorial project-links" data-reveal>
+        {project.links.map((link, i) => (
+          <Button href={link.href} variant={i === 0 ? 'primary' : 'ghost'} external>{link.label}</Button>
+        ))}
+      </section>
+    )}
 
     <section class="container-editorial team-card" data-reveal>
       <div class="team-card__box">
         <div>
           <p class="kicker">Equipo responsable</p>
-          <h2>{team.shortName}</h2>
-          <p>{team.tagline}</p>
+          <h2>{subteam ? subteam.name : team.shortName}</h2>
+          <p>{subteam ? `${team.shortName} · ${subteam.briefDescription}` : team.tagline}</p>
         </div>
-        <Button href={`/equipos/${team.slug}`} variant="primary">Conocer al equipo</Button>
+        <Button
+          href={subteam ? `/equipos/${team.slug}/${subteam.slug}` : `/equipos/${team.slug}`}
+          variant="primary"
+        >
+          Conocer al equipo
+        </Button>
       </div>
     </section>
 
@@ -177,6 +205,12 @@ const related = getProjectsByTeam(project.team)
     font-weight: 600;
   }
 
+  .thumb {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
   .cover {
     aspect-ratio: 400 / 260;
     border-radius: 1.5rem;
@@ -208,7 +242,7 @@ const related = getProjectsByTeam(project.team)
   .story {
     padding-block: clamp(2.5rem, 5vw, 4.5rem);
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
     gap: clamp(2rem, 5vw, 5rem);
   }
   .story__block {
@@ -222,6 +256,13 @@ const related = getProjectsByTeam(project.team)
     font-size: clamp(1.15rem, 1rem + 0.7vw, 1.55rem);
     line-height: 1.35;
     color: var(--color-up-ink);
+  }
+
+  .project-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-bottom: clamp(2rem, 4vw, 3rem);
   }
 
   .team-card__box {

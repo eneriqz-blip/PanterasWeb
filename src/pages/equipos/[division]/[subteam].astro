@@ -1,0 +1,17 @@
+---
+import SubteamLayout from '@/layouts/SubteamLayout.astro';
+import { teams } from '@/data/teams';
+
+export function getStaticPaths() {
+  return teams.flatMap((team) =>
+    team.subteams.map((subteam) => ({
+      params: { division: team.slug, subteam: subteam.slug },
+      props: { team, subteam },
+    }))
+  );
+}
+
+const { team, subteam } = Astro.props;
+---
+
+<SubteamLayout team={team} subteam={subteam} />

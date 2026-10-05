@@ -7,94 +7,55 @@ import FeaturedRail from '@/components/FeaturedRail.astro';
 import StatRow from '@/components/StatRow.astro';
 import Button from '@/components/Button.astro';
 import CTASection from '@/components/CTASection.astro';
-import { projects, getFeatured } from '@/data/projects';
+import { getFeatured } from '@/data/projects';
+import { teams } from '@/data/teams';
 
-const pillars = [
-  {
-    title: 'Aprender construyendo',
-    detail:
-      'Cada integrante trabaja sobre un proyecto real desde su primera semana: el aprendizaje ocurre resolviendo, no sólo estudiando.',
-  },
-  {
-    title: 'Mentoría entre pares',
-    detail:
-      'Quienes llevan más tiempo forman a quienes empiezan. El conocimiento se queda en el equipo, generación tras generación.',
-  },
-  {
-    title: 'Estándares de la industria',
-    detail:
-      'Revisión de trabajo, documentación y procesos como los de una organización real, no como los de un club informal.',
-  },
-  {
-    title: 'Comunidad Panamericana',
-    detail:
-      'Cuatro equipos, un mismo propósito: formar el potencial de cada estudiante para convertirlo en la mejor versión de sí mismo.',
-  },
-];
+const activeTeams = teams.flatMap((team) => team.subteams).filter((subteam) => subteam.status === 'activo').length;
+
+const benefits = ['Compite', 'Crea productos', 'Vincúlate con empleadores', 'Arma comunidad', 'Gana experiencia real'];
 
 const aggregateStats = [
-  { label: 'Integrantes activos', value: '148' },
-  { label: 'Proyectos documentados', value: `${projects.length}` },
-  { label: 'Equipos', value: '4' },
-  { label: 'Años de trayectoria', value: '7' },
+  { label: 'Áreas', value: String(teams.length) },
+  { label: 'Equipos activos', value: String(activeTeams) },
+  { label: 'De estudiantes participan', value: 'Cientos' },
 ];
 
-const manifesto =
-  'Nexus Labs nació de una idea simple: la mejor forma de formar ingenieros y creadores de tecnología es dándoles proyectos reales, no sólo materias.';
+const manifesto = `Nexus Labs reúne a los grupos estudiantiles de la Facultad de Ingeniería de la Universidad Panamericana: ${teams.length} áreas y ${activeTeams} equipos, abiertos a estudiantes de todas las carreras.`;
 ---
 
 <BaseLayout
   title="Nexus Labs"
-  description="Nexus Labs es la plataforma de clubes estudiantiles de Ingeniería y Tecnología de la Universidad Panamericana: Computer Science, Play, Mechanics e IISE."
+  description="Nexus Labs reúne a los grupos estudiantiles de la Facultad de Ingeniería de la Universidad Panamericana: Play, Computer Science, Mechanics e IISE."
 >
   <Hero />
 
   <section class="container-editorial section about">
     <Manifesto kicker="Quiénes somos" text={manifesto} />
 
-    <div class="prose" data-reveal>
-      <p>
-        Es la plataforma que reúne a los clubes estudiantiles de ingeniería y
-        tecnología de la Universidad Panamericana bajo una misma manera de
-        trabajar.
-      </p>
-      <p>
-        Creemos, como Institución, que el mundo sería mejor si todos
-        reconociéramos nuestro potencial para alcanzar la mejor versión de
-        nosotros mismos. Nexus Labs traduce ese propósito en algo concreto:
-        espacios donde un estudiante de primer semestre y uno de último año
-        construyen, se equivocan y aprenden juntos, con la disciplina de un
-        equipo profesional.
-      </p>
-    </div>
-
-    <div class="pillars">
-      {pillars.map((pillar, i) => (
-        <div data-reveal style={`--d:${i}`}>
-          <article class="pillar">
-            <span class="pillar__n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
-            <h3>{pillar.title}</h3>
-            <p>{pillar.detail}</p>
-          </article>
-        </div>
+    <ul class="benefits">
+      {benefits.map((benefit, i) => (
+        <li data-reveal style={`--d:${i}`}>
+          <span class="benefit__n" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+          {benefit}
+        </li>
       ))}
-    </div>
+    </ul>
   </section>
 
   <section class="container-editorial section" id="equipos">
     <div class="section-head" data-reveal>
       <div>
         <p class="kicker">Equipos</p>
-        <h2>Elige tu disciplina</h2>
+        <h2>Elige tu área</h2>
       </div>
-      <Button href="/equipos" variant="ghost">Comparar los 4 equipos</Button>
+      <Button href="/equipos" variant="ghost">Ver las 4 áreas</Button>
     </div>
     <TeamStack />
   </section>
 
   <section class="band">
     <div class="container-editorial">
-      <p class="kicker" data-reveal>Nexus Labs en cifras</p>
+      <p class="kicker" data-reveal>Nexus Labs</p>
       <div class="band__stats" data-reveal style="--d:1">
         <StatRow stats={aggregateStats} dark />
       </div>
@@ -122,53 +83,36 @@ const manifesto =
     padding-block: var(--spacing-section-y);
   }
 
-  .prose {
-    margin-top: 3rem;
+  .benefits {
+    margin-top: 3.5rem;
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem 3rem;
-    max-width: 62rem;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+    gap: 1rem;
+    list-style: none;
   }
-  .prose p {
-    color: color-mix(in srgb, var(--color-up-ink) 78%, transparent);
-  }
-
-  .pillars {
-    margin-top: 4rem;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-    gap: 1.25rem;
-  }
-  .pillar {
-    position: relative;
-    height: 100%;
-    padding: 1.75rem;
+  .benefits li {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-height: 8rem;
+    padding: 1.25rem 1.4rem;
     border-radius: 1.1rem;
     background: color-mix(in srgb, var(--color-up-gold) 10%, var(--color-up-paper));
     border: 1px solid color-mix(in srgb, var(--color-up-gold) 30%, transparent);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.2rem;
+    line-height: 1.2;
     transition: transform var(--duration-base) var(--ease-editorial),
       box-shadow var(--duration-base) var(--ease-editorial);
   }
-  .pillar:hover {
+  .benefits li:hover {
     transform: translateY(-4px);
     box-shadow: 0 24px 40px -28px rgb(0 0 0 / 0.3);
   }
-  .pillar__n {
-    display: block;
-    margin-bottom: 1rem;
-    font-family: var(--font-display);
-    font-weight: 700;
-    font-size: 0.9rem;
+  .benefit__n {
+    font-size: 0.85rem;
     color: var(--color-up-gold-ink);
-  }
-  .pillar h3 {
-    font-family: var(--font-display);
-    font-size: 1.1rem;
-  }
-  .pillar p {
-    margin-top: 0.6rem;
-    font-size: 0.9rem;
-    color: color-mix(in srgb, var(--color-up-ink) 68%, transparent);
   }
 
   .section-head {
@@ -199,9 +143,4 @@ const manifesto =
     margin-top: 2rem;
   }
 
-  @media (max-width: 860px) {
-    .prose {
-      grid-template-columns: 1fr;
-    }
-  }
 </style>
